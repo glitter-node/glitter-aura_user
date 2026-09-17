@@ -1,0 +1,406 @@
+{
+  "version": "1.0.0",
+  "layout_name": "auth/register",
+  "extends": "_user_base",
+  "meta": {
+    "title": "$t:auth.register_title",
+    "guest_only": true
+  },
+  "init_actions": [
+    {
+      "handler": "setState",
+      "params": {
+        "target": "local",
+        "registerForm": {
+          "name": "",
+          "nickname": "",
+          "email": "",
+          "password": "",
+          "password_confirmation": "",
+          "agree_terms": "",
+          "agree_privacy": ""
+        },
+        "isRegistering": false,
+        "registerError": null,
+        "registerErrors": null
+      }
+    }
+  ],
+  "slots": {
+    "content": [
+      {
+        "type": "basic",
+        "name": "Section",
+        "props": {
+          "className": "glitter-container glitter-page-shell glitter-page-content glitter-auth-page glitter-register-page"
+        },
+        "children": [
+          {
+            "type": "basic",
+            "name": "Span",
+            "props": {
+              "className": "glitter-kicker"
+            },
+            "text": "$t:auth.kicker"
+          },
+          {
+            "type": "basic",
+            "name": "H1",
+            "props": {
+              "className": "glitter-display glitter-section-title glitter-internal-title"
+            },
+            "text": "$t:auth.register_heading"
+          },
+          {
+            "type": "basic",
+            "name": "P",
+            "props": {
+              "className": "glitter-section-description"
+            },
+            "text": "$t:auth.register_intro"
+          },
+          {
+            "type": "basic",
+            "name": "Form",
+            "dataKey": "registerForm",
+            "props": {
+              "className": "glitter-form"
+            },
+            "children": [
+              {
+                "type": "basic",
+                "name": "Div",
+                "if": "{{_local.registerError}}",
+                "props": {
+                  "className": "glitter-form-message glitter-form-message-error",
+                  "role": "alert"
+                },
+                "text": "{{_local.registerError}}"
+              },
+              {
+                "type": "basic",
+                "name": "Label",
+                "props": {
+                  "htmlFor": "register_name",
+                  "className": "glitter-form-label"
+                },
+                "text": "$t:auth_account.name"
+              },
+              {
+                "type": "basic",
+                "name": "Input",
+                "props": {
+                  "id": "register_name",
+                  "name": "name",
+                  "type": "text",
+                  "autoComplete": "name",
+                  "required": true,
+                      "disabled": "{{_local.isRegistering}}",
+                      "className": "glitter-form-input"
+                    }
+                  },
+                  {
+                    "type": "basic",
+                    "name": "P",
+                    "if": "{{_local.registerErrors?.name}}",
+                    "props": { "className": "glitter-form-message glitter-form-message-error", "role": "alert" },
+                    "text": "{{Array.isArray(_local.registerErrors.name) ? _local.registerErrors.name[0] : _local.registerErrors.name}}"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Label",
+                "props": {
+                  "htmlFor": "register_nickname",
+                  "className": "glitter-form-label"
+                },
+                "text": "$t:auth_account.nickname"
+              },
+              {
+                "type": "basic",
+                "name": "Input",
+                "props": {
+                  "id": "register_nickname",
+                  "name": "nickname",
+                  "type": "text",
+                  "autoComplete": "nickname",
+                      "disabled": "{{_local.isRegistering}}",
+                      "className": "glitter-form-input"
+                    }
+                  },
+                  {
+                    "type": "basic",
+                    "name": "P",
+                    "if": "{{_local.registerErrors?.nickname}}",
+                    "props": { "className": "glitter-form-message glitter-form-message-error", "role": "alert" },
+                    "text": "{{Array.isArray(_local.registerErrors.nickname) ? _local.registerErrors.nickname[0] : _local.registerErrors.nickname}}"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Label",
+                "props": {
+                  "htmlFor": "register_email",
+                  "className": "glitter-form-label"
+                },
+                "text": "$t:auth.email"
+              },
+              {
+                "type": "basic",
+                "name": "Input",
+                "props": {
+                  "id": "register_email",
+                  "name": "email",
+                  "type": "email",
+                  "autoComplete": "email",
+                  "required": true,
+                      "disabled": "{{_local.isRegistering}}",
+                      "className": "glitter-form-input"
+                    }
+                  },
+                  {
+                    "type": "basic",
+                    "name": "P",
+                    "if": "{{_local.registerErrors?.email}}",
+                    "props": { "className": "glitter-form-message glitter-form-message-error", "role": "alert" },
+                    "text": "{{Array.isArray(_local.registerErrors.email) ? _local.registerErrors.email[0] : _local.registerErrors.email}}"
+                  },
+              {
+                "type": "basic",
+                "name": "Label",
+                "props": {
+                  "htmlFor": "register_password",
+                  "className": "glitter-form-label"
+                },
+                "text": "$t:auth.password"
+              },
+              {
+                "type": "basic",
+                "name": "Input",
+                "props": {
+                      "id": "register_password",
+                  "name": "password",
+                  "type": "password",
+                  "autoComplete": "new-password",
+                  "required": true,
+                  "disabled": "{{_local.isRegistering}}",
+                      "className": "glitter-form-input"
+                    }
+                  },
+                  {
+                    "type": "basic",
+                    "name": "P",
+                    "if": "{{_local.registerErrors?.password}}",
+                    "props": { "className": "glitter-form-message glitter-form-message-error", "role": "alert" },
+                    "text": "{{Array.isArray(_local.registerErrors.password) ? _local.registerErrors.password[0] : _local.registerErrors.password}}"
+                  },
+                  {
+                "type": "basic",
+                "name": "Label",
+                "props": {
+                  "htmlFor": "register_password_confirmation",
+                  "className": "glitter-form-label"
+                },
+                "text": "$t:auth_account.password_confirmation"
+              },
+              {
+                "type": "basic",
+                "name": "Input",
+                "props": {
+                      "id": "register_password_confirmation",
+                  "name": "password_confirmation",
+                  "type": "password",
+                  "autoComplete": "new-password",
+                  "required": true,
+                  "disabled": "{{_local.isRegistering}}",
+                      "className": "glitter-form-input"
+                    }
+                  },
+                  {
+                    "type": "basic",
+                    "name": "P",
+                    "if": "{{_local.registerErrors?.password_confirmation}}",
+                    "props": { "className": "glitter-form-message glitter-form-message-error", "role": "alert" },
+                    "text": "{{Array.isArray(_local.registerErrors.password_confirmation) ? _local.registerErrors.password_confirmation[0] : _local.registerErrors.password_confirmation}}"
+                  },
+                  {
+                "type": "basic",
+                "name": "Div",
+                "props": {
+                  "className": "glitter-register-agreements"
+                },
+                "children": [
+                  {
+                    "type": "basic",
+                    "name": "Label",
+                    "props": {
+                      "className": "glitter-consent-row"
+                    },
+                    "children": [
+                      {
+                        "type": "basic",
+                        "name": "Input",
+                        "props": {
+                          "id": "agree_terms",
+                          "name": "agree_terms",
+                          "type": "checkbox",
+                          "value": "1",
+                          "required": true,
+                          "disabled": "{{_local.isRegistering}}"
+                        }
+                      },
+                      {
+                        "type": "basic",
+                        "name": "Span",
+                        "props": {
+                          "className": "glitter-consent-label"
+                        },
+                        "text": "$t:auth_account.agree_terms"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "basic",
+                    "name": "P",
+                    "if": "{{_local.registerErrors?.agree_terms}}",
+                    "props": {
+                      "className": "glitter-form-message glitter-form-message-error"
+                    },
+                    "text": "{{Array.isArray(_local.registerErrors.agree_terms) ? _local.registerErrors.agree_terms[0] : _local.registerErrors.agree_terms}}"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Label",
+                    "props": {
+                      "className": "glitter-consent-row"
+                    },
+                    "children": [
+                      {
+                        "type": "basic",
+                        "name": "Input",
+                        "props": {
+                          "id": "agree_privacy",
+                          "name": "agree_privacy",
+                          "type": "checkbox",
+                          "value": "1",
+                          "required": true,
+                          "disabled": "{{_local.isRegistering}}"
+                        }
+                      },
+                      {
+                        "type": "basic",
+                        "name": "Span",
+                        "props": {
+                          "className": "glitter-consent-label"
+                        },
+                        "text": "$t:auth_account.agree_privacy"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "basic",
+                    "name": "P",
+                    "if": "{{_local.registerErrors?.agree_privacy}}",
+                    "props": {
+                      "className": "glitter-form-message glitter-form-message-error"
+                    },
+                    "text": "{{Array.isArray(_local.registerErrors.agree_privacy) ? _local.registerErrors.agree_privacy[0] : _local.registerErrors.agree_privacy}}"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "name": "Button",
+                "props": {
+                  "type": "submit",
+                  "disabled": "{{_local.isRegistering}}",
+                  "className": "glitter-solid glitter-action-link"
+                },
+                "text": "$t:auth_account.register_submit"
+              }
+            ],
+            "actions": [
+              {
+                "type": "submit",
+                "handler": "sequence",
+                "actions": [
+                  {
+                    "handler": "setState",
+                    "params": {
+                      "target": "local",
+                      "isRegistering": true,
+                      "registerError": null,
+                      "registerErrors": null
+                    }
+                  },
+                  {
+                    "handler": "apiCall",
+                    "target": "/api/auth/register",
+                    "params": {
+                      "method": "POST",
+                      "body": "{{Object.assign({}, _local.registerForm, query.verification_token ? { verification_token: query.verification_token } : {})}}"
+                    },
+                    "onSuccess": [
+                      {
+                        "handler": "setState",
+                        "params": {
+                          "target": "local",
+                          "isRegistering": false
+                        }
+                      },
+                      {
+                        "handler": "toast",
+                        "params": {
+                          "type": "success",
+                          "message": "$t:auth_account.register_success"
+                        }
+                      },
+                      {
+                        "handler": "navigate",
+                        "params": {
+                          "path": "/login"
+                        }
+                      }
+                    ],
+                    "onError": [
+                      {
+                        "handler": "setState",
+                        "params": {
+                          "target": "local",
+                          "isRegistering": false,
+                          "registerError": "$t:auth_account.register_failed",
+                          "registerErrors": "{{error.response?.errors ?? error.errors}}"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "basic",
+            "name": "P",
+            "props": {
+              "className": "glitter-auth-switch"
+            },
+            "children": [
+              {
+                "type": "basic",
+                "name": "Span",
+                "text": "$t:auth_account.have_account"
+              },
+              {
+                "type": "basic",
+                "name": "A",
+                "props": {
+                  "href": "/login",
+                  "className": "glitter-text-link"
+                },
+                "text": "$t:auth.login_link"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

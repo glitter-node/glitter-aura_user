@@ -1,0 +1,1 @@
+export declare const Time: import('react').ForwardRefExoticComponent<Omit<import('react').DetailedHTMLProps<import('react').TimeHTMLAttributes<HTMLTimeElement>, HTMLTimeElement>, "ref"> & import('react').RefAttributes<HTMLElement>>;

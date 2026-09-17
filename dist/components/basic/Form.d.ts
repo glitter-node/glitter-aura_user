@@ -1,0 +1,1 @@
+export declare const Form: import('react').ForwardRefExoticComponent<Omit<import('react').DetailedHTMLProps<import('react').FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>, "ref"> & import('react').RefAttributes<HTMLElement>>;

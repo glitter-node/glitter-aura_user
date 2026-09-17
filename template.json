@@ -1,0 +1,25 @@
+{
+  "identifier": "glitter-aura_user",
+  "vendor": "Glitter.kr",
+  "name": { "ko": "Glitter Aura", "en": "Glitter Aura" },
+  "version": "1.4.36",
+  "license": "MIT",
+  "description": {
+    "ko": "콘텐츠, 커뮤니티, 브랜드 및 다양한 서비스 사이트를 위한 범용 그누보드7 사용자 템플릿",
+    "en": "A versatile Gnuboard 7 user template for content, community, brand and service experiences"
+  },
+  "type": "user",
+  "locales": ["ko", "en"],
+  "author": { "name": "Glitter.kr", "email": "admin@glitter.kr", "url": "https://glitter.kr" },
+  "release_date": "2026-09-17",
+  "g7_version": ">=7.0.11",
+  "dependencies": { "modules": { "sirsoft-board": ">=1.1.2" }, "plugins": {} },
+  "assets": { "css": ["dist/css/components.css"], "js": ["dist/js/components.iife.js"], "fonts": [], "images": [] },
+  "components": {
+    "basic": ["a", "article", "button", "div", "footer", "form", "h1", "h2", "h3", "header", "hr", "img", "input", "label", "li", "main", "nav", "p", "section", "span", "textarea", "time", "ul"],
+    "composite": ["glitter-cta", "glitter-editorial-split", "glitter-feature-grid", "glitter-footer", "glitter-header", "glitter-hero", "glitter-section-header"],
+    "layout": []
+  },
+  "error_config": { "layouts": { "403": "errors/403", "404": "errors/404", "500": "errors/500" } },
+  "features": { "dark_mode": true, "responsive": true, "multi_language": true, "multi_currency": false }
+}

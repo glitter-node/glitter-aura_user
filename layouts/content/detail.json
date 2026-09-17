@@ -1,0 +1,50 @@
+{
+  "version": "1.0.0",
+  "layout_name": "content/detail",
+  "extends": "_user_base",
+  "meta": { "title": "$t:content.detail_title" },
+  "data_sources": [
+    { "id": "contentPost", "label_key": "$t:content.detail_data_source", "type": "api", "endpoint": "/api/modules/sirsoft-board/boards/{{query?.board_slug}}/posts/{{route.id}}", "method": "GET", "params": {}, "auto_fetch": true, "auth_mode": "optional", "loading_strategy": "blocking", "if": "{{query?.board_slug && route?.id}}", "refetchOnMount": true },
+    { "id": "contentNavigation", "label_key": "$t:content.navigation_data_source", "type": "api", "endpoint": "/api/modules/sirsoft-board/boards/{{query?.board_slug}}/posts/{{route.id}}/navigation", "method": "GET", "params": {}, "auto_fetch": true, "auth_mode": "optional", "loading_strategy": "progressive", "if": "{{query?.board_slug && route?.id}}", "refetchOnMount": true }
+  ],
+  "slots": {
+    "content": [
+      { "type": "basic", "name": "Section", "props": { "className": "glitter-container glitter-section glitter-page-shell glitter-content-detail" }, "children": [
+        { "type": "basic", "name": "Nav", "props": { "className": "glitter-article-context-nav", "aria-label": "$t:content.context_navigation" }, "children": [{ "type": "basic", "name": "A", "props": { "href": "/content?board_slug={{query?.board_slug ?? ''}}", "className": "glitter-text-link" }, "text": "$t:content.back" }] },
+        { "type": "basic", "name": "Div", "if": "{{!query?.board_slug}}", "props": { "className": "glitter-state glitter-state-empty" }, "children": [{ "type": "basic", "name": "P", "text": "$t:content.choose_board" }] },
+        { "type": "basic", "name": "Div", "if": "{{query?.board_slug && contentPost?.loading}}", "props": { "className": "glitter-state glitter-state-loading", "role": "status", "aria-live": "polite" }, "children": [{ "type": "basic", "name": "P", "text": "$t:state.loading" }] },
+        { "type": "basic", "name": "Div", "if": "{{query?.board_slug && contentPost?.error}}", "props": { "className": "glitter-state glitter-state-error", "role": "alert" }, "children": [{ "type": "basic", "name": "P", "text": "$t:state.error" }, { "type": "basic", "name": "Button", "props": { "type": "button", "className": "glitter-text-button" }, "actions": [{ "type": "click", "handler": "refetchDataSource", "params": { "dataSourceId": "contentPost" } }], "text": "$t:state.retry" }] },
+        { "type": "basic", "name": "Article", "if": "{{contentPost?.data && !contentPost?.error}}", "props": { "className": "glitter-article", "aria-labelledby": "glitter-article-title" }, "children": [
+          { "type": "basic", "name": "Header", "props": { "className": "glitter-article-header" }, "children": [
+            { "type": "basic", "name": "Span", "props": { "className": "glitter-kicker" }, "text": "$t:content.kicker" },
+            { "type": "basic", "name": "Div", "if": "{{contentPost?.data?.board?.name || contentPost?.data?.category}}", "props": { "className": "glitter-article-context" }, "children": [
+              { "type": "basic", "name": "A", "if": "{{contentPost?.data?.board?.name}}", "props": { "href": "/community/{{query?.board_slug}}", "className": "glitter-text-link" }, "text": "{{contentPost?.data?.board?.name}}" },
+              { "type": "basic", "name": "Span", "if": "{{contentPost?.data?.board?.name && contentPost?.data?.category}}", "props": { "className": "glitter-article-context-separator", "aria-hidden": "true" }, "text": "$t:content.context_separator" },
+              { "type": "basic", "name": "Span", "if": "{{contentPost?.data?.category}}", "text": "{{contentPost?.data?.category}}" }
+            ] },
+            { "type": "basic", "name": "H1", "props": { "id": "glitter-article-title", "className": "glitter-display glitter-article-title" }, "text": "{{contentPost?.data?.title ?? ''}}" },
+            { "type": "basic", "name": "Div", "props": { "className": "glitter-article-meta" }, "children": [
+              { "type": "basic", "name": "Div", "if": "{{contentPost?.data?.author?.name}}", "props": { "className": "glitter-article-meta-item" }, "children": [{ "type": "basic", "name": "Span", "props": { "className": "glitter-article-meta-label" }, "text": "$t:content.author_label" }, { "type": "basic", "name": "Span", "text": "{{contentPost?.data?.author?.name}}" }] },
+              { "type": "basic", "name": "Div", "if": "{{contentPost?.data?.created_at}}", "props": { "className": "glitter-article-meta-item" }, "children": [{ "type": "basic", "name": "Span", "props": { "className": "glitter-article-meta-label" }, "text": "$t:content.published_label" }, { "type": "basic", "name": "Time", "props": { "datetime": "{{contentPost?.data?.created_at}}" }, "text": "{{contentPost?.data?.created_at_formatted ?? contentPost?.data?.created_at ?? ''}}" }] },
+              { "type": "basic", "name": "Div", "props": { "className": "glitter-article-meta-item" }, "children": [{ "type": "basic", "name": "Span", "props": { "className": "glitter-article-meta-label" }, "text": "$t:content.comments_label" }, { "type": "basic", "name": "Span", "text": "{{contentPost?.data?.comment_count ?? 0}}" }] },
+              { "type": "basic", "name": "Div", "props": { "className": "glitter-article-meta-item" }, "children": [{ "type": "basic", "name": "Span", "props": { "className": "glitter-article-meta-label" }, "text": "$t:content.views_label" }, { "type": "basic", "name": "Span", "text": "{{contentPost?.data?.view_count ?? 0}}" }] }
+            ] }
+          ] },
+          { "type": "composite", "name": "HtmlContent", "props": { "content": "{{contentPost?.data?.content ?? ''}}", "isHtml": "{{(contentPost?.data?.content_mode ?? 'text') === 'html'}}", "className": "glitter-article-body" } },
+          { "type": "basic", "name": "Section", "if": "{{(contentPost?.data?.attachments?.length ?? 0) > 0}}", "props": { "className": "glitter-attachments", "aria-labelledby": "glitter-content-attachments-title" }, "children": [
+            { "type": "basic", "name": "H2", "props": { "id": "glitter-content-attachments-title", "className": "glitter-subtitle" }, "text": "$t:attachment.title" },
+            { "type": "basic", "name": "Ul", "props": { "className": "glitter-attachment-list" }, "children": [{ "type": "basic", "name": "Li", "iteration": { "source": "{{contentPost?.data?.attachments ?? []}}", "item_var": "attachment" }, "props": { "className": "glitter-attachment-item" }, "children": [{ "type": "basic", "name": "Span", "props": { "className": "glitter-attachment-name" }, "text": "{{attachment.original_filename ?? ''}}" }, { "type": "basic", "name": "A", "if": "{{attachment.download_url}}", "props": { "href": "{{attachment.download_url}}", "className": "glitter-text-link" }, "text": "$t:attachment.download" }] }] }
+          ] }
+        ] },
+        { "type": "basic", "name": "Div", "if": "{{contentNavigation?.error && contentPost?.data && !contentPost?.error}}", "props": { "className": "glitter-state glitter-state-error", "role": "status" }, "children": [{ "type": "basic", "name": "P", "text": "$t:state.error" }, { "type": "basic", "name": "Button", "props": { "type": "button", "className": "glitter-text-button" }, "actions": [{ "type": "click", "handler": "refetchDataSource", "params": { "dataSourceId": "contentNavigation" } }], "text": "$t:state.retry" }] },
+        { "type": "basic", "name": "Section", "if": "{{contentPost?.data && !contentPost?.error}}", "props": { "className": "glitter-article-close", "aria-label": "$t:content.continuation_label" }, "children": [
+          { "type": "basic", "name": "Div", "props": { "className": "glitter-article-return" }, "children": [{ "type": "basic", "name": "A", "props": { "href": "/content?board_slug={{query?.board_slug ?? ''}}", "className": "glitter-text-link" }, "text": "$t:content.back" }] },
+          { "type": "basic", "name": "Nav", "if": "{{contentNavigation?.data?.prev || contentNavigation?.data?.next}}", "props": { "className": "glitter-article-neighbors", "aria-label": "$t:content.neighbor_navigation" }, "children": [
+            { "type": "basic", "name": "A", "if": "{{contentNavigation?.data?.prev}}", "props": { "href": "/content/{{contentNavigation?.data?.prev?.id}}?board_slug={{query?.board_slug}}", "className": "glitter-article-neighbor glitter-text-link" }, "children": [{ "type": "basic", "name": "Span", "props": { "className": "glitter-article-neighbor-label" }, "text": "$t:content.previous" }, { "type": "basic", "name": "Span", "text": "{{contentNavigation?.data?.prev?.title ?? ''}}" }] },
+            { "type": "basic", "name": "A", "if": "{{contentNavigation?.data?.next}}", "props": { "href": "/content/{{contentNavigation?.data?.next?.id}}?board_slug={{query?.board_slug}}", "className": "glitter-article-neighbor glitter-text-link" }, "children": [{ "type": "basic", "name": "Span", "props": { "className": "glitter-article-neighbor-label" }, "text": "$t:content.next" }, { "type": "basic", "name": "Span", "text": "{{contentNavigation?.data?.next?.title ?? ''}}" }] }
+          ] }
+        ] }
+      ] }
+    ]
+  }
+}

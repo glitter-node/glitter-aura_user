@@ -1,0 +1,1 @@
+export declare const A: import('react').ForwardRefExoticComponent<Omit<import('react').DetailedHTMLProps<import('react').AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>, "ref"> & import('react').RefAttributes<HTMLElement>>;
