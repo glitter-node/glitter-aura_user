@@ -43,7 +43,7 @@ Glitter Aura는 Quiet, Luminous, Editorial, Structural이라는 문법 위에 Pr
 ## 요구 사항
 
 - Gnuboard 7 `>=7.0.11`
-- PHP 8.3 CLI 환경: `/usr/local/bin/php83`
+- PHP 8.3 CLI 환경: `php`
 - `sirsoft-board >=1.1.2` (content/community read와 post/comment interaction)
 - 별도 plugin dependency 없음
 
@@ -52,8 +52,8 @@ Glitter Aura는 Quiet, Luminous, Editorial, Structural이라는 문법 위에 Pr
 bundled source를 `templates/_bundled/glitter-aura_user/`에 둔 뒤 다음 lifecycle을 사용합니다.
 
 ```bash
-/usr/local/bin/php83 artisan template:install glitter-aura_user
-/usr/local/bin/php83 artisan template:activate glitter-aura_user
+php artisan template:install glitter-aura_user
+php artisan template:activate glitter-aura_user
 ```
 
 운영 checkout에서는 활성 템플릿을 교체하기 전에 백업·승인·검증 절차를 따르세요.
@@ -74,7 +74,7 @@ source of truth는 bundled 디렉터리입니다. 활성 `templates/glitter-aura
 cd templates/_bundled/glitter-aura_user
 npm run type-check
 npm run build
-/usr/local/bin/php83 artisan template:update glitter-aura_user --source=bundled --force
+php artisan template:update glitter-aura_user --source=bundled --force
 ```
 
 `npm run dev` 또는 Docker는 사용하지 않습니다. 운영형 개발에서는 `npm run build:watch`를 사용합니다.
