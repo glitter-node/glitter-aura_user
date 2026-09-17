@@ -91,7 +91,7 @@ export function GlitterHeader({ brandName = '', navItems = [], loginLabel = '', 
       </Button>
       <Div className="glitter-header-actions">
       <Button type="button" className={`glitter-theme-toggle ${isDark ? 'is-dark' : 'is-light'}`} aria-label={themeLabel} title={themeLabel} aria-pressed={isDark} onClick={toggleTheme}>
-        <Span className={`glitter-theme-icon ${isDark ? 'is-dark' : 'is-light'}`} aria-hidden="true" />
+        <Span className={`glitter-theme-icon ${isDark ? 'is-light' : 'is-dark'}`} aria-hidden="true" />
       </Button>
       <Nav aria-label={menuLabel} className="glitter-desktop-navigation">
         {navItems.map(item => <A key={item.href} href={item.href} className={`glitter-nav-link ${active(item) ? 'is-active' : ''}`} aria-current={active(item) ? 'page' : undefined}>{item.label}</A>)}

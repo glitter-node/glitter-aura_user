@@ -4,7 +4,7 @@
   --glitter-surface: #ffffff;
   --glitter-surface-strong: #e1e7dc;
   --glitter-text: #20251f;
-  --glitter-text-muted: #667064;
+  --glitter-text-muted: #5f695d;
   --glitter-text-soft: #687367;
   --glitter-border: #d5ddd1;
   --glitter-border-strong: #aebdac;
@@ -52,8 +52,8 @@
 .glitter-theme-toggle { display: inline-flex; width: 2rem; height: 2rem; align-items: center; justify-content: center; padding: 0; border: 0; background: transparent; color: var(--glitter-text-muted); cursor: pointer; }
 .glitter-theme-toggle:hover { color: var(--glitter-text); }
 .glitter-theme-icon { position: relative; display: block; width: 1rem; height: 1rem; }
-.glitter-theme-icon.is-light::before { position: absolute; inset: .22rem; border: 1.5px solid currentColor; border-radius: 50%; content: ""; box-shadow: 0 -.38rem 0 -.28rem currentColor, 0 .38rem 0 -.28rem currentColor, .38rem 0 0 -.28rem currentColor, -.38rem 0 0 -.28rem currentColor; }
-.glitter-theme-icon.is-dark::before { position: absolute; inset: .08rem; border-radius: 50%; background: currentColor; content: ""; }
+.glitter-theme-icon.is-light::before { position: absolute; inset: .18rem; border: 1.5px solid currentColor; border-radius: 50%; content: ""; box-shadow: 0 -.38rem 0 -.22rem currentColor, 0 .38rem 0 -.22rem currentColor, .38rem 0 0 -.22rem currentColor, -.38rem 0 0 -.22rem currentColor; }
+.glitter-theme-icon.is-dark::before { position: absolute; inset: .03rem; border-radius: 50%; background: currentColor; content: ""; }
 .glitter-theme-icon.is-dark::after { position: absolute; top: -.02rem; right: -.02rem; width: .72rem; height: .72rem; border-radius: 50%; background: var(--glitter-bg); content: ""; }
 .glitter-brand { color: var(--glitter-text); font-family: var(--glitter-font-sans); font-size: 1.35rem; letter-spacing: -.04em; text-decoration: none; }
 .glitter-desktop-navigation, .glitter-footer-links { display: flex; align-items: center; gap: clamp(1rem, 2.4vw, 2.25rem); }
@@ -243,7 +243,7 @@
 .glitter-content-detail .glitter-article-neighbor-label { color: var(--glitter-accent); font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
 .glitter-pagination { display: flex; flex-wrap: wrap; justify-content: center; max-width: 100%; margin-top: 2rem; }
 .glitter-search-form { display: flex; max-width: 42rem; gap: .75rem; margin-top: 3rem; }
-.glitter-search-input { min-width: 0; flex: 1; border: 1px solid var(--glitter-border-strong); border-radius: var(--glitter-radius-sm); background: var(--glitter-surface); padding: .85rem 1rem; color: var(--glitter-text); font: inherit; }
+.glitter-search-input { min-width: 0; flex: 1; border: 1px solid #829480; border-radius: var(--glitter-radius-sm); background: var(--glitter-surface); padding: .85rem 1rem; color: var(--glitter-text); font: inherit; }
 .glitter-search-page .glitter-section-header { max-width: 48rem; }
 .glitter-search-page .glitter-section-title { max-width: 18ch; font-size: clamp(2.25rem, 4vw, 4rem); line-height: 1.02; }
 .glitter-search-page .glitter-search-form { max-width: 46rem; margin-top: 2rem; }
@@ -332,7 +332,8 @@
 .glitter-attachment-name { color: var(--glitter-text); }
 .glitter-form-field { margin-top: 1.5rem; }
 .glitter-form-label { display: block; margin-bottom: .55rem; color: var(--glitter-text); font-size: .875rem; font-weight: 650; }
-.glitter-form-input { display: block; width: 100%; border: 1px solid var(--glitter-border-strong); border-radius: var(--glitter-radius-sm); background: var(--glitter-surface); padding: .85rem 1rem; color: var(--glitter-text); font: inherit; line-height: 1.5; }
+.glitter-form-input { display: block; width: 100%; border: 1px solid #829480; border-radius: var(--glitter-radius-sm); background: var(--glitter-surface); padding: .85rem 1rem; color: var(--glitter-text); font: inherit; line-height: 1.5; }
+.dark .glitter-root .glitter-search-input, .dark .glitter-root .glitter-form-input { border-color: var(--glitter-border-strong); }
 .glitter-form-input:disabled { opacity: .6; }
 .glitter-form-textarea { min-height: 12rem; resize: vertical; }
 .glitter-form-grid { display: grid; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }

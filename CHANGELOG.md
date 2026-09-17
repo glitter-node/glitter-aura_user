@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.38
+
+- Corrected the theme-toggle icon to represent the next Light/Dark action and improved the CSS-generated sun and moon silhouettes without changing the existing button, palette, or theme behavior.
+
+## 1.4.37
+
+- Improved Light-mode secondary text contrast.
+- Improved Light-mode form and search control boundary contrast without changing editorial divider borders or Dark-mode colors.
+
 ## 1.4.36
 
 - Added a compact, translated Glitter Aura header toggle that uses the established Gnuboard color-scheme state for light/dark switching on desktop and mobile.
