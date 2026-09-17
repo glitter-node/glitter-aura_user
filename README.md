@@ -8,7 +8,7 @@ Glitter Aura는 콘텐츠, 커뮤니티, 브랜드 및 다양한 서비스 사�
 
 ## Stable release
 
-현재 bundled stable release는 1.4.36입니다. 그누보드의 저장된 색상 모드와 시스템 설정을 Aura의 scoped dark 토큰에 연결하고 헤더에서 라이트·다크 모드를 전환할 수 있으며, 한국어·영어 시스템 고딕 sans-serif 기본·display 글꼴과 Community 게시글 작성·수정의 모드 구분, 보드 맥락, 검증 오류 연결, HTML 원문 편집 한계 안내를 제공합니다. 코드용 monospace는 유지하며, 1.4.32의 안전한 읽기·토론 통합과 Community 보드 랜딩, Home, Account, Content, 검색·탐색, 인증 foundation을 유지합니다.
+현재 bundled stable release는 1.4.38입니다. 그누보드의 저장된 색상 모드와 시스템 설정을 Aura의 scoped dark 토큰에 연결하고 헤더에서 라이트·다크 모드를 전환할 수 있으며, 한국어·영어 시스템 고딕 sans-serif 기본·display 글꼴과 Community 게시글 작성·수정의 모드 구분, 보드 맥락, 검증 오류 연결, HTML 원문 편집 한계 안내를 제공합니다. 코드용 monospace는 유지하며, 1.4.32의 안전한 읽기·토론 통합과 Community 보드 랜딩, Home, Account, Content, 검색·탐색, 인증 foundation을 유지합니다.
 
 ## 디자인 철학
 
