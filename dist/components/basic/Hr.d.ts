@@ -1,0 +1,1 @@
+export declare const Hr: import('react').ForwardRefExoticComponent<Omit<import('react').DetailedHTMLProps<import('react').HTMLAttributes<HTMLHRElement>, HTMLHRElement>, "ref"> & import('react').RefAttributes<HTMLElement>>;

@@ -1,0 +1,1 @@
+export declare const Img: import('react').ForwardRefExoticComponent<Omit<import('react').DetailedHTMLProps<import('react').ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>, "ref"> & import('react').RefAttributes<HTMLElement>>;

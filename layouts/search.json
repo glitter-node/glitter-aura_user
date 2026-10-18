@@ -1,0 +1,77 @@
+{
+  "version": "1.0.0",
+  "layout_name": "search",
+  "extends": "_user_base",
+  "meta": { "title": "$t:search.page_title" },
+  "data_sources": [{
+    "id": "searchResults",
+    "label_key": "$t:search.data_source",
+    "type": "api",
+    "endpoint": "/api/search",
+    "method": "GET",
+    "params": { "q": "{{query?.q ?? ''}}", "type": "posts", "sort": "latest", "page": "{{query?.page ?? 1}}", "per_page": 10 },
+    "auto_fetch": true,
+    "auth_mode": "optional",
+    "loading_strategy": "progressive",
+    "if": "{{query?.q}}",
+    "refetchOnMount": true
+  }],
+  "slots": { "content": [{
+    "type": "basic",
+    "name": "Section",
+    "props": { "className": "glitter-container glitter-section glitter-page-shell glitter-search-page" },
+    "children": [
+      { "type": "composite", "name": "GlitterSectionHeader", "props": { "eyebrow": "$t:search.kicker", "title": "$t:search.title", "description": "$t:search.intro", "headingLevel": "h1", "className": "glitter-internal-header" } },
+      {
+        "type": "basic",
+        "name": "Form",
+        "props": { "className": "glitter-search-form", "role": "search" },
+        "actions": [{ "type": "submit", "handler": "navigate", "params": { "path": "/search", "mergeQuery": false, "query": { "q": "{{$event.target.q.value}}", "page": 1 } } }],
+        "children": [
+          { "type": "basic", "name": "Label", "props": { "htmlFor": "glitter-search-query", "className": "glitter-sr-only" }, "text": "$t:search.input_label" },
+          { "type": "basic", "name": "Input", "props": { "id": "glitter-search-query", "name": "q", "type": "search", "value": "{{query?.q ?? ''}}", "className": "glitter-search-input", "placeholder": "$t:search.placeholder" } },
+          { "type": "basic", "name": "Button", "props": { "type": "submit", "className": "glitter-solid glitter-action-link" }, "text": "$t:search.submit" }
+        ]
+      },
+      { "type": "basic", "name": "A", "if": "{{query?.q}}", "props": { "href": "/search", "className": "glitter-text-link glitter-search-clear", "aria-label": "$t:search.clear" }, "text": "$t:search.clear" },
+      { "type": "basic", "name": "Div", "if": "{{!query?.q}}", "props": { "className": "glitter-search-initial" }, "children": [{ "type": "basic", "name": "P", "text": "$t:search.initial" }] },
+      { "type": "basic", "name": "Div", "if": "{{query?.q}}", "props": { "className": "glitter-search-context", "aria-live": "polite" }, "children": [
+        { "type": "basic", "name": "Span", "props": { "className": "glitter-search-context-label" }, "text": "$t:search.results_for" },
+        { "type": "basic", "name": "Span", "props": { "className": "glitter-search-query" }, "text": "{{query?.q}}" },
+        { "type": "basic", "name": "Span", "if": "{{searchResults?.data?.posts?.total_is_exact !== false && searchResults?.data?.posts?.total !== undefined}}", "props": { "className": "glitter-search-count" }, "text": "$t:search.result_count|count={{searchResults?.data?.posts?.total ?? 0}}" },
+        { "type": "basic", "name": "Span", "if": "{{searchResults?.data?.posts?.total_is_exact === false}}", "props": { "className": "glitter-search-count" }, "text": "$t:search.result_count_at_least|count={{searchResults?.data?.posts?.total ?? 0}}" }
+      ] },
+      { "type": "basic", "name": "Div", "if": "{{query?.q && searchResults?.loading}}", "props": { "className": "glitter-state glitter-search-state", "role": "status", "aria-live": "polite" }, "children": [{ "type": "basic", "name": "P", "text": "$t:state.loading" }] },
+      { "type": "basic", "name": "Div", "if": "{{query?.q && (searchResults?.error || searchResults?.data?.categories_failed?.posts)}}", "props": { "className": "glitter-state glitter-state-error glitter-search-state", "role": "alert" }, "children": [{ "type": "basic", "name": "P", "text": "$t:search.failed" }, { "type": "basic", "name": "Button", "props": { "type": "button", "className": "glitter-text-button" }, "actions": [{ "type": "click", "handler": "refetchDataSource", "params": { "dataSourceId": "searchResults" } }], "text": "$t:state.retry" }] },
+      { "type": "basic", "name": "Div", "if": "{{query?.q && !searchResults?.loading && !searchResults?.error && !searchResults?.data?.categories_failed?.posts && (searchResults?.data?.posts?.items?.length ?? 0) === 0}}", "props": { "className": "glitter-state glitter-state-empty glitter-search-state" }, "children": [{ "type": "basic", "name": "P", "text": "$t:search.empty" }] },
+      {
+        "type": "basic",
+        "name": "Div",
+        "if": "{{searchResults?.data?.posts?.items?.length > 0}}",
+        "props": { "className": "glitter-post-list glitter-search-results" },
+        "children": [{
+          "type": "basic",
+          "name": "Article",
+          "iteration": { "source": "{{searchResults?.data?.posts?.items ?? []}}", "item_var": "post", "index_var": "idx" },
+          "props": { "className": "glitter-post-item" },
+          "children": [
+            { "type": "basic", "name": "A", "if": "{{post.board_slug && post.board_name}}", "props": { "href": "/content?board_slug={{post.board_slug}}", "className": "glitter-search-result-context glitter-text-link" }, "text": "{{post.board_name}}" },
+            { "type": "basic", "name": "A", "if": "{{post.url}}", "props": { "href": "{{post.url}}", "className": "glitter-post-link" }, "children": [
+              { "type": "basic", "name": "Div", "props": { "className": "glitter-post-heading" }, "children": [
+                { "type": "basic", "name": "H2", "props": { "className": "glitter-post-title" }, "text": "{{post.title ?? ''}}" }
+              ] },
+              { "type": "basic", "name": "P", "if": "{{post.content_preview}}", "props": { "className": "glitter-post-excerpt" }, "text": "{{post.content_preview}}" },
+              { "type": "basic", "name": "Div", "props": { "className": "glitter-post-meta" }, "children": [
+                { "type": "basic", "name": "Span", "if": "{{post.author_name}}", "text": "{{post.author_name}}" },
+                { "type": "basic", "name": "Time", "if": "{{post.created_at}}", "props": { "datetime": "{{post.created_at}}" }, "text": "{{post.created_at_formatted ?? post.created_at ?? ''}}" },
+                { "type": "basic", "name": "Span", "text": "$t:search.views|count={{post.view_count ?? 0}}" },
+                { "type": "basic", "name": "Span", "text": "$t:search.comments|count={{post.comment_count ?? 0}}" }
+              ] }
+            ] }
+          ]
+        }]
+      },
+      { "type": "composite", "name": "Pagination", "if": "{{searchResults?.data?.last_page > 1 || searchResults?.data?.has_more_pages === true}}", "props": { "currentPage": "{{searchResults?.data?.current_page ?? query?.page ?? 1}}", "totalPages": "{{searchResults?.data?.last_page ?? null}}", "hasMorePages": "{{searchResults?.data?.has_more_pages ?? false}}", "className": "glitter-pagination glitter-search-pagination" }, "actions": [{ "event": "onPageChange", "handler": "navigate", "params": { "path": "/search", "mergeQuery": true, "query": { "page": "{{$args[0]}}" } } }] }
+    ]
+  }] }
+}

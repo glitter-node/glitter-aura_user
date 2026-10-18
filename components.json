@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "templateId": "glitter-aura_user",
+  "version": "1.0.3",
+  "components": {
+    "basic": [
+      { "name": "Article", "type": "basic", "description": "Article landmark", "path": "src/components/basic/Article.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "A", "type": "basic", "description": "Accessible link", "path": "src/components/basic/A.tsx", "props": { "href": { "type": "string", "required": false }, "className": { "type": "string", "required": false } } },
+      { "name": "Button", "type": "basic", "description": "Button control", "path": "src/components/basic/Button.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "Div", "type": "basic", "description": "Generic layout container", "path": "src/components/basic/Div.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "Footer", "type": "basic", "description": "Footer landmark", "path": "src/components/basic/Footer.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "Form", "type": "basic", "description": "Form element", "path": "src/components/basic/Form.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "H1", "type": "basic", "description": "Primary heading", "path": "src/components/basic/H1.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "H2", "type": "basic", "description": "Section heading", "path": "src/components/basic/H2.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "H3", "type": "basic", "description": "Subheading", "path": "src/components/basic/H3.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "Header", "type": "basic", "description": "Header landmark", "path": "src/components/basic/Header.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "Hr", "type": "basic", "description": "Section divider", "path": "src/components/basic/Hr.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "Img", "type": "basic", "description": "Responsive image", "path": "src/components/basic/Img.tsx", "props": { "src": { "type": "string", "required": true }, "alt": { "type": "string", "required": false }, "className": { "type": "string", "required": false } } },
+      { "name": "Input", "type": "basic", "description": "Form input", "path": "src/components/basic/Input.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "Label", "type": "basic", "description": "Form label", "path": "src/components/basic/Label.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "Li", "type": "basic", "description": "List item", "path": "src/components/basic/Li.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "Main", "type": "basic", "description": "Main content landmark", "path": "src/components/basic/Main.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "Nav", "type": "basic", "description": "Navigation landmark", "path": "src/components/basic/Nav.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "P", "type": "basic", "description": "Paragraph", "path": "src/components/basic/P.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "Section", "type": "basic", "description": "Section landmark", "path": "src/components/basic/Section.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "Span", "type": "basic", "description": "Inline text", "path": "src/components/basic/Span.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "Time", "type": "basic", "description": "Time semantic element", "path": "src/components/basic/Time.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "Textarea", "type": "basic", "description": "Multiline form input", "path": "src/components/basic/Textarea.tsx", "props": { "className": { "type": "string", "required": false } } },
+      { "name": "Ul", "type": "basic", "description": "List", "path": "src/components/basic/Ul.tsx", "props": { "className": { "type": "string", "required": false } } }
+    ],
+    "composite": [
+      { "name": "GlitterHeader", "type": "composite", "description": "Responsive editorial site navigation", "path": "src/components/composite/GlitterHeader.tsx" },
+      { "name": "GlitterFooter", "type": "composite", "description": "Generic identity and navigation footer", "path": "src/components/composite/GlitterFooter.tsx", "props": { "primaryNavLabel": { "type": "string", "required": false }, "utilityNavLabel": { "type": "string", "required": false } } },
+      { "name": "GlitterHero", "type": "composite", "description": "Asymmetric text-led hero", "path": "src/components/composite/GlitterHero.tsx" },
+      { "name": "GlitterSectionHeader", "type": "composite", "description": "Editorial section heading", "path": "src/components/composite/GlitterSectionHeader.tsx", "props": { "headingLevel": { "type": "string", "required": false } } },
+      { "name": "GlitterFeatureGrid", "type": "composite", "description": "Numbered capability list", "path": "src/components/composite/GlitterFeatureGrid.tsx" },
+      { "name": "GlitterEditorialSplit", "type": "composite", "description": "Asymmetric editorial text split", "path": "src/components/composite/GlitterEditorialSplit.tsx" },
+      { "name": "GlitterCTA", "type": "composite", "description": "Quiet closing call to action", "path": "src/components/composite/GlitterCTA.tsx" }
+    ],
+    "layout": []
+  }
+}

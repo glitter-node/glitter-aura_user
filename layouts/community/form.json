@@ -1,0 +1,93 @@
+{
+  "version": "1.0.0",
+  "layout_name": "community/form",
+  "extends": "_user_base",
+  "meta": { "title": "{{route?.id ? '$t:community.edit_title' : '$t:community.write_title'}}" },
+  "state": {
+    "form": { "title": "", "content": "", "category": "", "content_mode": "text", "author_name": "", "password": "", "is_secret": false },
+    "isSaving": false,
+    "errors": null
+  },
+  "data_sources": [
+    {
+      "id": "communityForm",
+      "label_key": "$t:community.form_data_source",
+      "type": "api",
+      "endpoint": "/api/modules/sirsoft-board/boards/{{route.slug}}/posts/form-data{{route?.id ? '?post_id=' + route.id : ''}}",
+      "method": "GET",
+      "auto_fetch": true,
+      "auth_mode": "optional",
+      "cache": false,
+      "initLocal": "form",
+      "loading_strategy": "blocking",
+      "refetchOnMount": true
+    },
+    {
+      "id": "communityFormMeta",
+      "label_key": "$t:community.form_meta_data_source",
+      "type": "api",
+      "endpoint": "/api/modules/sirsoft-board/boards/{{route.slug}}/posts/form-meta{{route?.id ? '?post_id=' + route.id : ''}}",
+      "method": "GET",
+      "auto_fetch": true,
+      "auth_mode": "optional",
+      "cache": false,
+      "loading_strategy": "blocking",
+      "refetchOnMount": true
+    }
+  ],
+  "slots": {
+    "content": [
+      {
+        "type": "basic",
+        "name": "Section",
+        "dataKey": "form",
+        "props": { "className": "glitter-container glitter-section glitter-page-shell glitter-form-page glitter-community-form" },
+        "children": [
+          { "type": "basic", "name": "Div", "props": { "className": "glitter-community-form-context" }, "children": [{ "type": "basic", "name": "Span", "props": { "className": "glitter-kicker" }, "text": "$t:community.kicker" }, { "type": "basic", "name": "Span", "props": { "className": "glitter-community-context-separator", "aria-hidden": "true" }, "text": "·" }, { "type": "basic", "name": "A", "props": { "href": "/community/{{route.slug}}", "className": "glitter-text-link" }, "text": "{{communityFormMeta?.data?.board?.name ?? ''}}" }] },
+          { "type": "basic", "name": "H1", "props": { "id": "glitter-community-form-title", "className": "glitter-display glitter-section-title" }, "text": "{{route?.id ? '$t:community.edit_title' : '$t:community.write_title'}}" },
+          { "type": "basic", "name": "P", "props": { "className": "glitter-section-description" }, "text": "{{route?.id ? '$t:community.edit_intro' : '$t:community.write_intro'}}" },
+          { "type": "basic", "name": "Div", "if": "{{communityForm?.loading || communityFormMeta?.loading}}", "props": { "className": "glitter-state", "role": "status", "aria-live": "polite" }, "children": [{ "type": "basic", "name": "P", "text": "$t:state.loading" }] },
+          { "type": "basic", "name": "Div", "if": "{{communityForm?.error || communityFormMeta?.error}}", "props": { "className": "glitter-state glitter-state-error", "role": "alert" }, "children": [{ "type": "basic", "name": "P", "text": "$t:community.form_unavailable" }, { "type": "basic", "name": "Button", "props": { "type": "button", "className": "glitter-text-button" }, "actions": [{ "type": "click", "handler": "conditions", "conditions": [{ "if": "{{communityForm?.error && communityFormMeta?.error}}", "then": { "handler": "sequence", "actions": [{ "handler": "refetchDataSource", "params": { "dataSourceId": "communityForm" } }, { "handler": "refetchDataSource", "params": { "dataSourceId": "communityFormMeta" } }] } }, { "if": "{{communityForm?.error}}", "then": { "handler": "refetchDataSource", "params": { "dataSourceId": "communityForm" } } }, { "if": "{{communityFormMeta?.error}}", "then": { "handler": "refetchDataSource", "params": { "dataSourceId": "communityFormMeta" } } }] }], "text": "$t:state.retry" }] },
+          {
+            "type": "basic",
+            "name": "Form",
+            "if": "{{!communityForm?.loading && !communityForm?.error && !communityFormMeta?.loading && !communityFormMeta?.error}}",
+            "props": { "className": "glitter-form", "aria-labelledby": "glitter-community-form-title", "aria-busy": "{{_local.isSaving}}" },
+            "children": [
+              { "type": "basic", "name": "Div", "if": "{{_local.errors}}", "props": { "className": "glitter-form-message glitter-form-message-error", "role": "alert" }, "children": [{ "type": "basic", "name": "P", "text": "$t:community.form_error" }, { "type": "basic", "name": "Ul", "iteration": { "source": "Object.entries(_local.errors ?? {}).flatMap(([field, messages]) => Array.isArray(messages) ? messages : [messages])", "item_var": "message" }, "children": [{ "type": "basic", "name": "Li", "text": "{{message}}" }] }] },
+              { "type": "basic", "name": "Div", "props": { "className": "glitter-form-field" }, "children": [{ "type": "basic", "name": "Label", "props": { "htmlFor": "glitter-post-title", "className": "glitter-form-label" }, "text": "$t:community.fields.title" }, { "type": "basic", "name": "Input", "props": { "id": "glitter-post-title", "name": "title", "required": true, "disabled": "{{_local.isSaving}}", "aria-describedby": "{{_local.errors?.title ? 'glitter-post-title-error' : undefined}}", "className": "glitter-form-input" } }, { "type": "basic", "name": "P", "if": "{{_local.errors?.title}}", "props": { "id": "glitter-post-title-error", "className": "glitter-form-field-error", "role": "alert" }, "text": "{{Array.isArray(_local.errors?.title) ? _local.errors.title[0] : _local.errors.title}}" }] },
+              { "type": "basic", "name": "Div", "props": { "className": "glitter-form-field" }, "children": [{ "type": "basic", "name": "Label", "props": { "htmlFor": "glitter-post-content", "className": "glitter-form-label" }, "text": "$t:community.fields.content" }, { "type": "basic", "name": "Textarea", "props": { "id": "glitter-post-content", "name": "content", "required": true, "rows": 12, "disabled": "{{_local.isSaving}}", "aria-describedby": "{{_local.errors?.content ? 'glitter-post-content-error' : undefined}}", "className": "glitter-form-input glitter-form-textarea" } }, { "type": "basic", "name": "P", "if": "{{_local.errors?.content}}", "props": { "id": "glitter-post-content-error", "className": "glitter-form-field-error", "role": "alert" }, "text": "{{Array.isArray(_local.errors?.content) ? _local.errors.content[0] : _local.errors.content}}" }, { "type": "basic", "name": "P", "if": "{{route?.id && _local.form?.content_mode === 'html'}}", "props": { "className": "glitter-form-hint" }, "text": "$t:community.html_source_hint" }] },
+              { "type": "basic", "name": "Div", "props": { "className": "glitter-form-grid" }, "children": [
+                { "type": "basic", "name": "Div", "if": "{{communityFormMeta?.data?.board?.show_category === true}}", "props": { "className": "glitter-form-field" }, "children": [{ "type": "basic", "name": "Label", "props": { "htmlFor": "glitter-post-category", "className": "glitter-form-label" }, "text": "$t:community.fields.category" }, { "type": "basic", "name": "Input", "props": { "id": "glitter-post-category", "name": "category", "disabled": "{{_local.isSaving}}", "aria-describedby": "{{_local.errors?.category ? 'glitter-post-category-error' : undefined}}", "className": "glitter-form-input" } }, { "type": "basic", "name": "P", "if": "{{_local.errors?.category}}", "props": { "id": "glitter-post-category-error", "className": "glitter-form-field-error", "role": "alert" }, "text": "{{Array.isArray(_local.errors?.category) ? _local.errors.category[0] : _local.errors.category}}" }] },
+                { "type": "basic", "name": "Div", "if": "{{!_global.currentUser?.uuid}}", "props": { "className": "glitter-form-field" }, "children": [{ "type": "basic", "name": "Label", "props": { "htmlFor": "glitter-post-author", "className": "glitter-form-label" }, "text": "$t:community.fields.author_name" }, { "type": "basic", "name": "Input", "props": { "id": "glitter-post-author", "name": "author_name", "autoComplete": "name", "disabled": "{{_local.isSaving}}", "aria-describedby": "{{_local.errors?.author_name ? 'glitter-post-author-error' : undefined}}", "className": "glitter-form-input" } }, { "type": "basic", "name": "P", "if": "{{_local.errors?.author_name}}", "props": { "id": "glitter-post-author-error", "className": "glitter-form-field-error", "role": "alert" }, "text": "{{Array.isArray(_local.errors?.author_name) ? _local.errors.author_name[0] : _local.errors.author_name}}" }] }
+              ] },
+              { "type": "basic", "name": "Label", "if": "{{communityFormMeta?.data?.board?.secret_mode === 'enabled'}}", "props": { "htmlFor": "glitter-post-secret", "className": "glitter-consent-row" }, "children": [{ "type": "basic", "name": "Input", "props": { "id": "glitter-post-secret", "name": "is_secret", "type": "checkbox", "value": "1", "checked": "{{_local.form?.is_secret}}", "disabled": "{{_local.isSaving}}" } }, { "type": "basic", "name": "Span", "props": { "className": "glitter-consent-label" }, "text": "$t:community.fields.is_secret" }] },
+              { "type": "basic", "name": "Div", "if": "{{!_global.currentUser?.uuid}}", "props": { "className": "glitter-form-field" }, "children": [{ "type": "basic", "name": "Label", "props": { "htmlFor": "glitter-post-password", "className": "glitter-form-label" }, "text": "$t:community.fields.password" }, { "type": "basic", "name": "Input", "props": { "id": "glitter-post-password", "name": "password", "type": "password", "autoComplete": "new-password", "disabled": "{{_local.isSaving}}", "aria-describedby": "{{_local.errors?.password ? 'glitter-post-password-error' : undefined}}", "className": "glitter-form-input" } }, { "type": "basic", "name": "P", "if": "{{_local.errors?.password}}", "props": { "id": "glitter-post-password-error", "className": "glitter-form-field-error", "role": "alert" }, "text": "{{Array.isArray(_local.errors?.password) ? _local.errors.password[0] : _local.errors.password}}" }] },
+              { "type": "basic", "name": "Div", "props": { "className": "glitter-form-actions" }, "children": [
+                { "type": "basic", "name": "A", "if": "{{!_local.isSaving}}", "props": { "href": "{{route?.id ? '/community/' + route.slug + '/' + route.id : '/community/' + route.slug}}", "className": "glitter-text-link" }, "text": "$t:community.cancel" },
+                { "type": "basic", "name": "Button", "props": { "type": "submit", "disabled": "{{_local.isSaving}}", "className": "glitter-solid glitter-action-link" }, "text": "{{_local.isSaving ? '$t:community.saving' : '$t:community.save'}}" }
+              ] }
+            ],
+            "actions": [
+              {
+                "type": "submit",
+                "handler": "sequence",
+                "actions": [
+                  { "handler": "setState", "params": { "target": "local", "isSaving": true, "errors": null } },
+                  { "handler": "apiCall", "auth_mode": "optional", "target": "{{route?.id ? '/api/modules/sirsoft-board/boards/' + route.slug + '/posts/' + route.id : '/api/modules/sirsoft-board/boards/' + route.slug + '/posts'}}", "params": { "method": "{{route?.id ? 'PUT' : 'POST'}}", "body": "{{Object.assign({}, _local.form, { content_mode: _local.form?.content_mode ?? 'text' })}}" }, "onSuccess": [
+                    { "handler": "setState", "params": { "target": "local", "isSaving": false, "errors": null } },
+                    { "handler": "toast", "params": { "type": "success", "message": "$t:community.save_success" } },
+                    { "handler": "navigate", "params": { "path": "/community/{{route.slug}}/{{route?.id ?? result?.data?.id}}", "mergeQuery": true, "query": {} } }
+                  ], "onError": [
+                    { "handler": "setState", "params": { "target": "local", "isSaving": false, "errors": "{{error.errors}}", "form": "{{Object.assign({}, _local.form, { password: '' })}}" } },
+                    { "handler": "toast", "params": { "type": "error", "message": "$t:community.save_failed" } }
+                  ] }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
