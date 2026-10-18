@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "description": "Glitter Aura 범용 사용자 템플릿 라우트 정의",
+  "routes": [
+    { "path": "/", "layout": "home", "auth_required": false, "meta": { "title": "$t:home.page_title" } },
+    { "path": "/about", "layout": "about", "auth_required": false, "meta": { "title": "$t:about.page_title" } },
+    { "path": "/content", "layout": "content/index", "auth_required": false, "meta": { "title": "$t:content.index_title" } },
+    { "path": "/content/:id", "layout": "content/detail", "auth_required": false, "meta": { "title": "$t:content.detail_title" } },
+    { "path": "/community/:slug", "layout": "community/index", "auth_required": false, "meta": { "title": "$t:community.index_title" } },
+    { "path": "/community/:slug/write", "layout": "community/form", "auth_required": false, "meta": { "title": "$t:community.write_title" } },
+    { "path": "/community/:slug/:id/edit", "layout": "community/form", "auth_required": false, "meta": { "title": "$t:community.edit_title" } },
+    { "path": "/community/:slug/:id", "layout": "community/detail", "auth_required": false, "meta": { "title": "$t:community.detail_title" } },
+    { "path": "/board/:slug", "layout": "community/index", "auth_required": false, "meta": { "title": "$t:community.index_title" } },
+    { "path": "/board/:slug/write", "layout": "community/form", "auth_required": false, "meta": { "title": "$t:community.write_title" } },
+    { "path": "/board/:slug/:id/edit", "layout": "community/form", "auth_required": false, "meta": { "title": "$t:community.edit_title" } },
+    { "path": "/board/:slug/:id", "layout": "community/detail", "auth_required": false, "meta": { "title": "$t:community.detail_title" } },
+    { "path": "/search", "layout": "search", "auth_required": false, "meta": { "title": "$t:search.page_title" } },
+    { "path": "/login", "layout": "auth/login", "auth_required": false, "guest_only": true, "meta": { "title": "$t:auth.login_title" } },
+    { "path": "/forgot-password", "layout": "auth/forgot_password", "auth_required": false, "guest_only": true, "meta": { "title": "$t:auth.forgot_password_title" } },
+    { "path": "/reset-password", "layout": "auth/reset_password", "auth_required": false, "guest_only": true, "meta": { "title": "$t:auth.reset_password_title" } },
+    { "path": "/register", "layout": "auth/register", "auth_required": false, "guest_only": true, "meta": { "title": "$t:auth.register_title" } },
+    { "path": "/account", "layout": "account/index", "auth_required": true, "meta": { "title": "$t:account.page_title" } },
+    { "path": "/mypage/profile", "layout": "account/index", "auth_required": true, "meta": { "title": "$t:account.page_title" } },
+    { "path": "/pages/contact", "layout": "pages/contact", "auth_required": false, "meta": { "title": "$t:contact.page_title" } },
+    { "path": "/pages/policy", "layout": "pages/policy", "auth_required": false, "meta": { "title": "$t:policy.page_title" } }
+  ]
+}

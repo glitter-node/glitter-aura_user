@@ -1,0 +1,334 @@
+{
+  "version": "1.0.0",
+  "layout_name": "content/index",
+  "extends": "_user_base",
+  "meta": { "title": "$t:content.index_title" },
+  "data_sources": [
+    {
+      "id": "contentBoard",
+      "label_key": "$t:content.board_data_source",
+      "type": "api",
+      "endpoint": "/api/modules/sirsoft-board/boards/{{query?.board_slug}}",
+      "method": "GET",
+      "params": {},
+      "auto_fetch": true,
+      "auth_mode": "optional",
+      "loading_strategy": "progressive",
+      "if": "{{query?.board_slug}}",
+      "refetchOnMount": true
+    },
+    {
+      "id": "contentBoards",
+      "label_key": "$t:content.boards_data_source",
+      "type": "api",
+      "endpoint": "/api/modules/sirsoft-board/boards",
+      "method": "GET",
+      "params": {},
+      "auto_fetch": true,
+      "auth_mode": "optional",
+      "loading_strategy": "progressive",
+      "if": "{{!query?.board_slug}}",
+      "refetchOnMount": true
+    },
+    {
+      "id": "contentPosts",
+      "label_key": "$t:content.data_source",
+      "type": "api",
+      "endpoint": "/api/modules/sirsoft-board/boards/{{query?.board_slug}}/posts",
+      "method": "GET",
+      "params": {
+        "page": "{{query?.page ?? 1}}",
+        "per_page": "{{query?.per_page ?? 10}}",
+        "search": "{{query?.q ?? ''}}",
+        "category": "{{query?.category ?? ''}}"
+      },
+      "auto_fetch": true,
+      "auth_mode": "optional",
+      "loading_strategy": "progressive",
+      "if": "{{query?.board_slug}}",
+      "refetchOnMount": true
+    }
+  ],
+  "slots": {
+    "content": [
+      {
+        "type": "basic",
+        "name": "Section",
+        "props": { "className": "glitter-container glitter-section glitter-page-shell glitter-content-page" },
+        "children": [
+          {
+            "type": "composite",
+            "name": "GlitterSectionHeader",
+            "if": "{{!query?.board_slug}}",
+            "props": {
+              "eyebrow": "$t:content.kicker",
+              "title": "$t:content.title",
+              "description": "$t:content.intro", "headingLevel": "h1", "className": "glitter-internal-header"
+            }
+          },
+          {
+            "type": "composite",
+            "name": "GlitterSectionHeader",
+            "if": "{{query?.board_slug && !contentBoard?.data}}",
+            "props": {
+              "eyebrow": "$t:content.kicker",
+              "title": "$t:content.title",
+              "description": "$t:content.intro", "headingLevel": "h1", "className": "glitter-internal-header"
+            }
+          },
+          {
+            "type": "composite",
+            "name": "GlitterSectionHeader",
+            "if": "{{query?.board_slug && contentBoard?.data}}",
+            "props": {
+              "eyebrow": "$t:content.context_kicker",
+              "title": "{{contentBoard?.data?.name ?? ''}}",
+              "description": "{{contentBoard?.data?.description ?? ''}}", "headingLevel": "h1", "className": "glitter-internal-header"
+            }
+          },
+          {
+            "type": "basic",
+            "name": "A",
+            "if": "{{query?.board_slug}}",
+            "props": { "href": "/content", "className": "glitter-text-link glitter-content-context-link" },
+            "text": "$t:content.back_to_boards"
+          },
+          {
+            "type": "basic",
+            "name": "Nav",
+            "if": "{{query?.board_slug && contentBoard?.data}}",
+            "props": { "className": "glitter-content-context-actions", "aria-label": "$t:content.context_actions" },
+            "children": [
+              { "type": "basic", "name": "A", "props": { "href": "/community/{{query?.board_slug}}", "className": "glitter-text-link" }, "text": "$t:content.open_community" },
+              { "type": "basic", "name": "A", "if": "{{contentBoard?.data?.abilities?.can_create}}", "props": { "href": "/community/{{query?.board_slug}}/write", "className": "glitter-action-link" }, "text": "$t:content.write_post" }
+            ]
+          },
+          {
+            "type": "basic",
+            "name": "Div",
+            "if": "{{query?.board_slug && contentBoard?.loading}}",
+            "props": { "className": "glitter-state", "role": "status", "aria-live": "polite" },
+            "children": [{ "type": "basic", "name": "P", "text": "$t:state.loading" }]
+          },
+          {
+            "type": "basic",
+            "name": "Div",
+            "if": "{{query?.board_slug && contentBoard?.error}}",
+            "props": { "className": "glitter-state glitter-state-error", "role": "alert" },
+            "children": [
+              { "type": "basic", "name": "P", "text": "$t:state.error" },
+              {
+                "type": "basic",
+                "name": "Button",
+                "props": { "type": "button", "className": "glitter-text-button" },
+                "actions": [{ "type": "click", "handler": "refetchDataSource", "params": { "dataSourceId": "contentBoard" } }],
+                "text": "$t:state.retry"
+              }
+            ]
+          },
+          {
+            "type": "basic",
+            "name": "Div",
+            "if": "{{!query?.board_slug && contentBoards?.loading}}",
+            "props": { "className": "glitter-state", "role": "status", "aria-live": "polite" },
+            "children": [{ "type": "basic", "name": "P", "text": "$t:state.loading" }]
+          },
+          {
+            "type": "basic",
+            "name": "Div",
+            "if": "{{!query?.board_slug && contentBoards?.error}}",
+            "props": { "className": "glitter-state glitter-state-error", "role": "alert" },
+            "children": [
+              { "type": "basic", "name": "P", "text": "$t:state.error" },
+              {
+                "type": "basic",
+                "name": "Button",
+                "props": { "type": "button", "className": "glitter-text-button" },
+                "actions": [{ "type": "click", "handler": "refetchDataSource", "params": { "dataSourceId": "contentBoards" } }],
+                "text": "$t:state.retry"
+              }
+            ]
+          },
+          {
+            "type": "basic",
+            "name": "Div",
+            "if": "{{!query?.board_slug && !contentBoards?.loading && !contentBoards?.error && (contentBoards?.data?.length ?? 0) === 0}}",
+            "props": { "className": "glitter-state glitter-state-empty" },
+            "children": [{ "type": "basic", "name": "P", "text": "$t:content.boards_empty" }]
+          },
+          {
+            "type": "basic",
+            "name": "Div",
+            "if": "{{!query?.board_slug && (contentBoards?.data?.length ?? 0) > 0}}",
+            "props": { "className": "glitter-post-list glitter-content-board-list" },
+            "children": [
+              {
+                "type": "basic",
+                "name": "Article",
+                "iteration": {
+                  "source": "{{contentBoards?.data ?? []}}",
+                  "item_var": "board",
+                  "index_var": "idx"
+                },
+                "props": { "className": "glitter-post-item" },
+                "children": [
+                  {
+                    "type": "basic",
+                    "name": "A",
+                    "props": {
+                      "href": "/content?board_slug={{board.slug}}",
+                      "className": "glitter-post-link"
+                    },
+                    "children": [
+                      {
+                        "type": "basic",
+                        "name": "Div",
+                        "props": { "className": "glitter-post-heading" },
+                        "children": [
+                          { "type": "basic", "name": "Span", "props": { "className": "glitter-post-category" }, "text": "{{idx + 1}}" },
+                          { "type": "basic", "name": "H2", "props": { "className": "glitter-post-title" }, "text": "{{board.name}}" }
+                        ]
+                      },
+                      {
+                        "type": "basic",
+                        "name": "P",
+                        "if": "{{board.description}}",
+                        "props": { "className": "glitter-post-excerpt" },
+                        "text": "{{board.description}}"
+                      },
+                      {
+                        "type": "basic",
+                        "name": "Div",
+                        "props": { "className": "glitter-post-meta" },
+                        "children": [{ "type": "basic", "name": "Span", "text": "$t:content.board_posts_count|count={{board.posts_count ?? 0}}" }]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "basic",
+            "name": "Div",
+            "if": "{{query?.board_slug && contentPosts?.loading}}",
+            "props": { "className": "glitter-state", "role": "status", "aria-live": "polite" },
+            "children": [{ "type": "basic", "name": "P", "text": "$t:state.loading" }]
+          },
+          {
+            "type": "basic",
+            "name": "Div",
+            "if": "{{query?.board_slug && contentPosts?.error}}",
+            "props": { "className": "glitter-state glitter-state-error", "role": "alert" },
+            "children": [
+              { "type": "basic", "name": "P", "text": "$t:state.error" },
+              {
+                "type": "basic",
+                "name": "Button",
+                "props": { "type": "button", "className": "glitter-text-button" },
+                "actions": [{ "type": "click", "handler": "refetchDataSource", "params": { "dataSourceId": "contentPosts" } }],
+                "text": "$t:state.retry"
+              }
+            ]
+          },
+          {
+            "type": "basic",
+            "name": "Div",
+            "if": "{{query?.board_slug && !contentPosts?.loading && !contentPosts?.error && (contentPosts?.data?.data?.length ?? 0) === 0}}",
+            "props": { "className": "glitter-state glitter-state-empty" },
+            "children": [{ "type": "basic", "name": "P", "text": "$t:content.empty" }]
+          },
+          {
+            "type": "basic",
+            "name": "Article",
+            "if": "{{(contentPosts?.data?.data?.length ?? 0) > 0}}",
+            "iteration": {
+              "source": "{{contentPosts?.data?.data ?? []}}",
+              "item_var": "post",
+              "index_var": "idx"
+            },
+            "props": { "className": "glitter-post-item" },
+            "children": [
+              {
+                "type": "basic",
+                "name": "A",
+                "props": {
+                  "href": "/content/{{post.id}}?board_slug={{query?.board_slug}}",
+                  "className": "glitter-post-link"
+                },
+                "children": [
+                  {
+                    "type": "basic",
+                    "name": "Div",
+                    "props": { "className": "glitter-post-heading" },
+                    "children": [
+                      { "type": "basic", "name": "Span", "if": "{{post.is_notice}}", "props": { "className": "glitter-post-category" }, "text": "$t:content.notice" },
+                      { "type": "basic", "name": "Span", "if": "{{!post.is_notice && post.category}}", "props": { "className": "glitter-post-category" }, "text": "{{post.category}}" },
+                      { "type": "basic", "name": "Span", "if": "{{post.is_new}}", "props": { "className": "glitter-post-category" }, "text": "$t:content.new" },
+                      {
+                        "type": "basic",
+                        "name": "H2",
+                        "props": { "className": "glitter-post-title" },
+                        "text": "{{post.title}}"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "composite",
+                    "name": "HtmlContent",
+                    "if": "{{post.content_preview}}",
+                    "props": {
+                      "content": "{{post.content_preview}}",
+                      "isHtml": false,
+                      "className": "glitter-post-excerpt"
+                    }
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Div",
+                    "props": { "className": "glitter-post-meta" },
+                    "children": [
+                      { "type": "basic", "name": "Span", "text": "$t:content.post_number|number={{post.number ?? (idx + 1)}}" },
+                      { "type": "basic", "name": "Span", "if": "{{post.author?.name}}", "text": "$t:content.post_author|name={{post.author.name}}" },
+                      {
+                        "type": "basic",
+                        "name": "Time",
+                        "props": { "datetime": "{{post.created_at ?? ''}}" },
+                        "text": "$t:content.post_posted|date={{post.created_at_formatted ?? post.created_at ?? ''}}"
+                      },
+                      { "type": "basic", "name": "Span", "if": "{{post.comment_count != null}}", "text": "$t:content.post_comments|count={{post.comment_count}}" },
+                      { "type": "basic", "name": "Span", "if": "{{post.view_count != null}}", "text": "$t:content.post_views|count={{post.view_count}}" },
+                      { "type": "basic", "name": "Span", "if": "{{post.has_attachment}}", "text": "$t:content.post_attachments|count={{post.attachment_count ?? 0}}" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "composite",
+            "name": "Pagination",
+            "if": "{{contentPosts?.data?.pagination}}",
+            "props": {
+              "currentPage": "{{contentPosts?.data?.pagination?.current_page ?? 1}}",
+              "totalPages": "{{contentPosts?.data?.pagination?.last_page ?? null}}",
+              "hasMorePages": "{{contentPosts?.data?.pagination?.has_more_pages ?? false}}",
+              "className": "glitter-pagination"
+            },
+            "actions": [
+              {
+                "event": "onPageChange",
+                "handler": "navigate",
+                "params": {
+                  "path": "/content",
+                  "mergeQuery": true,
+                  "query": { "page": "{{$args[0]}}" }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

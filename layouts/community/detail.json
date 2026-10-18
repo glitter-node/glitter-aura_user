@@ -1,0 +1,1656 @@
+{
+  "version": "1.0.0",
+  "layout_name": "community/detail",
+  "extends": "_user_base",
+  "meta": {
+    "title": "$t:community.detail_title"
+  },
+  "state": {
+    "commentForm": {
+      "content": "",
+      "author_name": "",
+      "password": ""
+    },
+    "commentEditForm": {
+      "content": "",
+      "password": "",
+      "verification_token": ""
+    },
+    "commentVerifyForm": {
+      "password": ""
+    },
+    "isSaving": false,
+    "commentSaving": false,
+    "editSaving": false,
+    "deleteSaving": false,
+    "verifySaving": false,
+    "errors": null,
+    "commentErrors": null,
+    "editingCommentId": null,
+    "deletingCommentId": null,
+    "verifyingCommentId": null,
+    "commentVerification": {
+      "id": null,
+      "token": null
+    },
+    "confirmDelete": false,
+    "commentSuccess": false,
+    "replyTargetId": null,
+    "replyTargetAuthor": "",
+    "replySuccess": false
+  },
+  "data_sources": [
+    {
+      "id": "communityBoard",
+      "label_key": "$t:community.board_data_source",
+      "type": "api",
+      "endpoint": "/api/modules/sirsoft-board/boards/{{route.slug}}",
+      "method": "GET",
+      "auto_fetch": true,
+      "auth_mode": "optional",
+      "loading_strategy": "progressive",
+      "refetchOnMount": true
+    },
+    {
+      "id": "communityPost",
+      "label_key": "$t:community.detail_data_source",
+      "type": "api",
+      "endpoint": "/api/modules/sirsoft-board/boards/{{route.slug}}/posts/{{route.id}}",
+      "method": "GET",
+      "auto_fetch": true,
+      "auth_mode": "optional",
+      "loading_strategy": "blocking",
+      "refetchOnMount": true
+    },
+    {
+      "id": "communityComments",
+      "label_key": "$t:community.comments_data_source",
+      "type": "api",
+      "endpoint": "/api/modules/sirsoft-board/boards/{{route.slug}}/posts/{{route.id}}/comments",
+      "method": "GET",
+      "auto_fetch": true,
+      "auth_mode": "optional",
+      "loading_strategy": "progressive",
+      "refetchOnMount": true
+    },
+    {
+      "id": "communityNavigation",
+      "label_key": "$t:community.navigation_data_source",
+      "type": "api",
+      "endpoint": "/api/modules/sirsoft-board/boards/{{route.slug}}/posts/{{route.id}}/navigation",
+      "method": "GET",
+      "auto_fetch": true,
+      "auth_mode": "optional",
+      "loading_strategy": "progressive",
+      "refetchOnMount": true
+    }
+  ],
+  "slots": {
+    "content": [
+      {
+        "type": "basic",
+        "name": "Section",
+        "props": {
+          "className": "glitter-container glitter-section glitter-page-shell glitter-content-detail glitter-community-detail"
+        },
+        "children": [
+          {
+            "type": "basic",
+            "name": "Nav",
+            "props": {
+              "className": "glitter-community-detail-nav",
+              "aria-label": "$t:community.context_navigation"
+            },
+            "children": [
+              {
+                "type": "basic",
+                "name": "A",
+                "props": {
+                  "href": "/community/{{route.slug}}",
+                  "className": "glitter-text-link"
+                },
+                "text": "$t:community.back"
+              },
+              {
+                "type": "basic",
+                "name": "A",
+                "props": {
+                  "href": "/content",
+                  "className": "glitter-text-link"
+                },
+                "text": "$t:community.back_to_content"
+              }
+            ]
+          },
+          {
+            "type": "basic",
+            "name": "Div",
+            "if": "{{communityPost?.loading}}",
+            "props": {
+              "className": "glitter-state",
+              "role": "status"
+            },
+            "children": [
+              {
+                "type": "basic",
+                "name": "P",
+                "text": "$t:state.loading"
+              }
+            ]
+          },
+          {
+            "type": "basic",
+            "name": "Div",
+            "if": "{{communityPost?.error}}",
+            "props": {
+              "className": "glitter-state glitter-state-error",
+              "role": "alert"
+            },
+            "children": [
+              {
+                "type": "basic",
+                "name": "P",
+                "text": "$t:state.error"
+              },
+              {
+                "type": "basic",
+                "name": "Button",
+                "props": { "type": "button", "className": "glitter-text-button" },
+                "actions": [{ "type": "click", "handler": "refetchDataSource", "params": { "dataSourceId": "communityPost" } }],
+                "text": "$t:state.retry"
+              }
+            ]
+          },
+          {
+            "type": "basic",
+            "name": "Article",
+            "if": "{{communityPost?.data && !communityPost?.error}}",
+            "props": {
+              "className": "glitter-article glitter-community-reading",
+              "aria-labelledby": "glitter-community-post-title"
+            },
+            "children": [
+              {
+                "type": "basic",
+                "name": "Div",
+                "props": {
+                  "className": "glitter-community-post-context"
+                },
+                "children": [
+                  {
+                  "type": "basic",
+                  "name": "Span",
+                  "props": {
+                    "className": "glitter-kicker glitter-article-context-label"
+                    },
+                    "text": "$t:community.kicker"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Span",
+                    "props": {
+                      "className": "glitter-community-context-separator",
+                      "aria-hidden": "true"
+                    },
+                    "text": "·"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "A",
+                    "props": {
+                      "href": "/community/{{route.slug}}",
+                      "className": "glitter-text-link"
+                    },
+                    "text": "{{communityBoard?.data?.name ?? communityPost?.data?.board?.name ?? ''}}"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "name": "H1",
+                "props": {
+                  "id": "glitter-community-post-title",
+                  "className": "glitter-display glitter-article-title glitter-reading-title"
+                },
+                "text": "{{communityPost?.data?.title ?? ''}}"
+              },
+              {
+                "type": "basic",
+                "name": "Div",
+                "props": {
+                  "className": "glitter-post-meta glitter-article-meta"
+                },
+                "children": [
+                  {
+                    "type": "basic",
+                    "name": "Span",
+                    "if": "{{communityPost?.data?.is_notice}}",
+                    "props": {
+                      "className": "glitter-community-post-state"
+                    },
+                    "text": "$t:community.notice"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Span",
+                    "if": "{{communityPost?.data?.is_new}}",
+                    "props": {
+                      "className": "glitter-community-post-state"
+                    },
+                    "text": "$t:community.new"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Span",
+                    "if": "{{communityPost?.data?.category}}",
+                    "props": {
+                      "className": "glitter-post-category"
+                    },
+                    "text": "{{communityPost?.data?.category}}"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Span",
+                    "props": {
+                      "className": "glitter-article-meta-item"
+                    },
+                    "children": [
+                      {
+                        "type": "basic",
+                        "name": "Span",
+                        "props": {
+                          "className": "glitter-article-meta-label"
+                        },
+                        "text": "$t:community.author"
+                      },
+                      {
+                        "type": "basic",
+                        "name": "Span",
+                        "text": "{{communityPost?.data?.author?.name ?? ''}}"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Time",
+                    "props": {
+                      "datetime": "{{communityPost?.data?.created_at ?? ''}}",
+                      "className": "glitter-article-meta-item"
+                    },
+                    "children": [
+                      {
+                        "type": "basic",
+                        "name": "Span",
+                        "props": {
+                          "className": "glitter-article-meta-label"
+                        },
+                        "text": "$t:community.posted"
+                      },
+                      {
+                        "type": "basic",
+                        "name": "Span",
+                        "text": "{{communityPost?.data?.created_at_formatted ?? communityPost?.data?.created_at ?? ''}}"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Span",
+                    "text": "$t:community.views|count={{communityPost?.data?.view_count ?? 0}}"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Span",
+                    "text": "$t:community.comments|count={{communityPost?.data?.comment_count ?? 0}}"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "name": "Div",
+                "if": "{{communityPost?.data?.is_owner || communityPost?.data?.abilities?.can_manage}}",
+                "props": {
+                  "className": "glitter-post-actions"
+                },
+                "children": [
+                  {
+                    "type": "basic",
+                    "name": "A",
+                    "props": {
+                      "href": "/community/{{route.slug}}/{{route.id}}/edit",
+                      "className": "glitter-text-link"
+                    },
+                    "text": "$t:community.edit"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Button",
+                    "props": {
+                      "type": "button",
+                      "className": "glitter-text-button"
+                    },
+                    "actions": [
+                      {
+                        "type": "click",
+                        "handler": "setState",
+                        "params": {
+                          "target": "local",
+                          "confirmDelete": true
+                        }
+                      }
+                    ],
+                    "text": "$t:community.delete"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "name": "Div",
+                "if": "{{_local.confirmDelete}}",
+                "props": {
+                  "className": "glitter-confirm",
+                  "role": "alertdialog"
+                },
+                "children": [
+                  {
+                    "type": "basic",
+                    "name": "P",
+                    "text": "$t:community.delete_confirm"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Button",
+                    "props": {
+                      "type": "button",
+                      "className": "glitter-solid glitter-action-link",
+                      "disabled": "{{_local.isSaving}}"
+                    },
+                    "actions": [
+                      {
+                        "type": "click",
+                        "handler": "sequence",
+                        "actions": [
+                          {
+                            "handler": "setState",
+                            "params": {
+                              "target": "local",
+                              "isSaving": true
+                            }
+                          },
+                          {
+                            "handler": "apiCall",
+                            "auth_mode": "optional",
+                            "target": "/api/modules/sirsoft-board/boards/{{route.slug}}/posts/{{route.id}}",
+                            "params": {
+                              "method": "DELETE",
+                              "body": {}
+                            },
+                            "onSuccess": [
+                              {
+                                "handler": "navigate",
+                                "params": {
+                                  "path": "/community/{{route.slug}}"
+                                }
+                              }
+                            ],
+                            "onError": [
+                              {
+                                "handler": "setState",
+                                "params": {
+                                  "target": "local",
+                                  "isSaving": false,
+                                  "confirmDelete": false,
+                                  "errors": "{{error.errors}}"
+                                }
+                              },
+                              {
+                                "handler": "toast",
+                                "params": {
+                                  "type": "error",
+                                  "message": "$t:community.delete_failed"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "text": "$t:community.delete_confirm_action"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Button",
+                    "props": {
+                      "type": "button",
+                      "className": "glitter-text-button"
+                    },
+                    "actions": [
+                      {
+                        "type": "click",
+                        "handler": "setState",
+                        "params": {
+                          "target": "local",
+                          "confirmDelete": false
+                        }
+                      }
+                    ],
+                    "text": "$t:community.cancel"
+                  }
+                ]
+              },
+              {
+                "type": "composite",
+                "name": "HtmlContent",
+                "props": {
+                  "content": "{{communityPost?.data?.content ?? ''}}",
+                  "isHtml": "{{(communityPost?.data?.content_mode ?? 'text') === 'html'}}",
+                  "className": "glitter-article-body"
+                }
+              },
+              {
+                "type": "basic",
+                "name": "Section",
+                "if": "{{(communityPost?.data?.attachments?.length ?? 0) > 0}}",
+                "props": {
+                  "className": "glitter-attachments",
+                  "aria-labelledby": "glitter-attachments-title"
+                },
+                "children": [
+                  {
+                    "type": "basic",
+                    "name": "H2",
+                    "props": {
+                      "id": "glitter-attachments-title",
+                      "className": "glitter-subtitle"
+                    },
+                    "text": "$t:community.attachments|count={{communityPost?.data?.attachments?.length ?? 0}}"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Ul",
+                    "props": {
+                      "className": "glitter-attachment-list"
+                    },
+                    "children": [
+                      {
+                        "type": "basic",
+                        "name": "Li",
+                        "iteration": {
+                          "source": "{{communityPost?.data?.attachments ?? []}}",
+                          "item_var": "attachment"
+                        },
+                        "props": {
+                          "className": "glitter-attachment-item"
+                        },
+                        "children": [
+                          {
+                            "type": "basic",
+                            "name": "Div",
+                            "props": {
+                              "className": "glitter-attachment-info"
+                            },
+                            "children": [
+                              {
+                                "type": "basic",
+                                "name": "Span",
+                                "props": {
+                                  "className": "glitter-attachment-name"
+                                },
+                                "text": "{{attachment.original_filename ?? ''}}"
+                              },
+                              {
+                                "type": "basic",
+                                "name": "Span",
+                                "if": "{{attachment.size_formatted}}",
+                                "props": {
+                                  "className": "glitter-attachment-meta"
+                                },
+                                "text": "{{attachment.size_formatted}}"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "basic",
+                            "name": "A",
+                            "if": "{{attachment.download_url}}",
+                            "props": {
+                              "href": "{{attachment.download_url}}",
+                              "className": "glitter-text-link"
+                            },
+                            "text": "$t:attachment.download"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "name": "Nav",
+                "if": "{{communityNavigation?.data?.prev || communityNavigation?.data?.next}}",
+                "props": {
+                  "className": "glitter-article-neighbors",
+                  "aria-label": "$t:community.neighbor_navigation"
+                },
+                "children": [
+                  {
+                    "type": "basic",
+                    "name": "A",
+                    "if": "{{communityNavigation?.data?.prev}}",
+                    "props": {
+                      "href": "/community/{{route.slug}}/{{communityNavigation?.data?.prev?.id}}",
+                      "className": "glitter-article-neighbor glitter-text-link"
+                    },
+                    "children": [
+                      {
+                        "type": "basic",
+                        "name": "Span",
+                        "props": {
+                          "className": "glitter-article-neighbor-label"
+                        },
+                        "text": "$t:community.previous"
+                      },
+                      {
+                        "type": "basic",
+                        "name": "Span",
+                        "text": "{{communityNavigation?.data?.prev?.title ?? ''}}"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "basic",
+                    "name": "A",
+                    "if": "{{communityNavigation?.data?.next}}",
+                    "props": {
+                      "href": "/community/{{route.slug}}/{{communityNavigation?.data?.next?.id}}",
+                      "className": "glitter-article-neighbor glitter-text-link"
+                    },
+                    "children": [
+                      {
+                        "type": "basic",
+                        "name": "Span",
+                        "props": {
+                          "className": "glitter-article-neighbor-label"
+                        },
+                        "text": "$t:community.next"
+                      },
+                      {
+                        "type": "basic",
+                        "name": "Span",
+                        "text": "{{communityNavigation?.data?.next?.title ?? ''}}"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "basic",
+            "name": "Div",
+            "if": "{{communityNavigation?.error && communityPost?.data && !communityPost?.error}}",
+            "props": { "className": "glitter-state glitter-state-error", "role": "status" },
+            "children": [
+              { "type": "basic", "name": "P", "text": "$t:state.error" },
+              {
+                "type": "basic",
+                "name": "Button",
+                "props": { "type": "button", "className": "glitter-text-button" },
+                "actions": [{ "type": "click", "handler": "refetchDataSource", "params": { "dataSourceId": "communityNavigation" } }],
+                "text": "$t:state.retry"
+              }
+            ]
+          },
+          {
+            "type": "basic",
+            "name": "Section",
+            "if": "{{communityPost?.data && !communityPost?.error && communityPost?.data?.board?.use_comment !== false && communityPost?.data?.abilities?.can_read_comments !== false}}",
+            "props": {
+              "className": "glitter-comments",
+              "aria-labelledby": "glitter-comments-title"
+            },
+            "children": [
+              {
+                "type": "basic",
+                "name": "H2",
+                "props": {
+                  "id": "glitter-comments-title",
+                  "className": "glitter-subtitle"
+                },
+                "text": "$t:community.comments_title|count={{communityPost?.data?.comment_count ?? communityPost?.data?.comments_total ?? 0}}"
+              },
+              {
+                "type": "basic",
+                "name": "Div",
+                "if": "{{communityComments?.loading}}",
+                "props": {
+                  "className": "glitter-state",
+                  "role": "status"
+                },
+                "children": [
+                  {
+                    "type": "basic",
+                    "name": "P",
+                    "text": "$t:state.loading"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "name": "Div",
+                "if": "{{communityComments?.error}}",
+                "props": {
+                  "className": "glitter-state glitter-state-error",
+                  "role": "alert"
+                },
+                "children": [
+                  {
+                    "type": "basic",
+                    "name": "P",
+                    "text": "$t:community.comments_error"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Button",
+                    "props": { "type": "button", "className": "glitter-text-button" },
+                    "actions": [{ "type": "click", "handler": "refetchDataSource", "params": { "dataSourceId": "communityComments" } }],
+                    "text": "$t:state.retry"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "name": "Div",
+                "if": "{{_local.verifyingCommentId}}",
+                "props": {
+                  "className": "glitter-comment-verify",
+                  "role": "group"
+                },
+                "children": [
+                  {
+                    "type": "basic",
+                    "name": "P",
+                    "text": "$t:comment_lifecycle.verify_intro"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Form",
+                    "dataKey": "commentVerifyForm",
+                    "children": [
+                      {
+                        "type": "basic",
+                        "name": "Label",
+                        "props": {
+                          "htmlFor": "glitter-comment-verify-password",
+                          "className": "glitter-form-label"
+                        },
+                        "text": "$t:comment_lifecycle.verify_password"
+                      },
+                      {
+                        "type": "basic",
+                        "name": "Input",
+                        "props": {
+                          "id": "glitter-comment-verify-password",
+                          "name": "password",
+                          "type": "password",
+                          "autocomplete": "current-password",
+                          "required": true,
+                          "className": "glitter-form-input"
+                        }
+                      },
+                      {
+                        "type": "basic",
+                        "name": "P",
+                        "if": "{{_local.commentErrors}}",
+                        "props": {
+                          "className": "glitter-form-message glitter-form-message-error",
+                          "role": "alert"
+                        },
+                        "text": "$t:comment_lifecycle.verify_failed"
+                      },
+                      {
+                        "type": "basic",
+                        "name": "Button",
+                        "props": {
+                          "type": "submit",
+                          "disabled": "{{_local.verifySaving}}",
+                          "className": "glitter-solid glitter-action-link"
+                        },
+                        "text": "$t:comment_lifecycle.verify_submit"
+                      },
+                      {
+                        "type": "basic",
+                        "name": "Button",
+                        "props": {
+                          "type": "button",
+                          "className": "glitter-text-button"
+                        },
+                        "actions": [
+                          {
+                            "type": "click",
+                            "handler": "setState",
+                            "params": {
+                              "target": "local",
+                              "verifyingCommentId": null,
+                              "commentErrors": null,
+                              "commentVerifyForm": {
+                                "password": ""
+                              }
+                            }
+                          }
+                        ],
+                        "text": "$t:comment_lifecycle.cancel"
+                      }
+                    ],
+                    "actions": [
+                      {
+                        "type": "submit",
+                        "if": "{{!_local.verifySaving}}",
+                        "handler": "sequence",
+                        "actions": [
+                          {
+                            "handler": "setState",
+                            "params": {
+                              "target": "local",
+                              "verifySaving": true,
+                              "commentErrors": null
+                            }
+                          },
+                          {
+                            "handler": "apiCall",
+                            "auth_mode": "optional",
+                            "target": "/api/modules/sirsoft-board/boards/{{route.slug}}/comments/{{_local.verifyingCommentId}}/verify-password",
+                            "params": {
+                              "method": "POST",
+                              "body": "{{_local.commentVerifyForm}}"
+                            },
+                            "onSuccess": [
+                              {
+                                "handler": "setState",
+                                "params": {
+                                  "target": "local",
+                                  "verifySaving": false,
+                                  "verifyingCommentId": null,
+                                  "commentErrors": null,
+                                  "commentVerifyForm": {
+                                    "password": ""
+                                  },
+                                  "commentVerification": {
+                                    "id": "{{response.data.comment_id}}",
+                                    "token": "{{response.data.verification_token}}"
+                                  }
+                                }
+                              }
+                            ],
+                            "onError": [
+                              {
+                                "handler": "setState",
+                                "params": {
+                                  "target": "local",
+                                  "verifySaving": false,
+                                  "commentErrors": "{{error.errors}}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "name": "Div",
+                "if": "{{!communityComments?.loading && !communityComments?.error && (communityComments?.data?.length ?? 0) === 0}}",
+                "props": {
+                  "className": "glitter-state glitter-state-empty"
+                },
+                "children": [
+                  {
+                    "type": "basic",
+                    "name": "P",
+                    "text": "$t:community.comments_empty"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "name": "Div",
+                "if": "{{communityComments?.data?.length > 0}}",
+                "props": {
+                  "className": "glitter-comment-list"
+                },
+                "children": [
+                  {
+                    "type": "basic",
+                    "name": "Article",
+                    "iteration": {
+                      "source": "{{communityComments?.data ?? []}}",
+                      "item_var": "comment"
+                    },
+                    "props": {
+                      "className": "glitter-comment-item glitter-comment-depth-{{comment.depth ?? 0}}"
+                    },
+                    "children": [
+                      {
+                        "type": "basic",
+                        "name": "Div",
+                        "props": {
+                          "className": "glitter-post-meta"
+                        },
+                        "children": [
+                          {
+                            "type": "basic",
+                            "name": "Span",
+                            "text": "{{comment.author?.name ?? ''}}"
+                          },
+                          {
+                            "type": "basic",
+                            "name": "Time",
+                            "props": {
+                              "datetime": "{{comment.created_at ?? ''}}"
+                            },
+                            "text": "{{comment.created_at_formatted ?? comment.created_at ?? ''}}"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "basic",
+                        "name": "P",
+                        "if": "{{_local.editingCommentId !== comment.id}}",
+                        "props": {
+                          "className": "glitter-comment-content"
+                        },
+                        "text": "{{comment.content ?? ''}}"
+                      },
+                      {
+                        "type": "basic",
+                        "name": "Div",
+                        "if": "{{communityPost?.data?.abilities?.can_write_comments && communityPost?.data?.board?.max_comment_depth > (comment.depth ?? 0) && comment.status === 'published' && !comment.deleted_at}}",
+                        "props": {
+                          "className": "glitter-comment-actions glitter-comment-reply-actions"
+                        },
+                        "children": [
+                          {
+                            "type": "basic",
+                            "name": "Button",
+                            "props": {
+                              "type": "button",
+                              "className": "glitter-text-button"
+                            },
+                            "actions": [
+                              {
+                                "type": "click",
+                                "handler": "setState",
+                                "params": {
+                                  "target": "local",
+                                  "replyTargetId": "{{comment.id}}",
+                                  "replyTargetAuthor": "{{comment.author?.name ?? ''}}",
+                                  "commentErrors": null,
+                                  "errors": null,
+                                  "commentSuccess": false,
+                                  "replySuccess": false,
+                                  "commentForm": {
+                                    "content": "",
+                                    "author_name": "",
+                                    "password": "",
+                                    "parent_id": "{{comment.id}}"
+                                  }
+                                }
+                              }
+                            ],
+                            "text": "$t:community.reply"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "basic",
+                        "name": "Form",
+                        "if": "{{_local.editingCommentId === comment.id}}",
+                        "dataKey": "commentEditForm",
+                        "props": {
+                          "className": "glitter-comment-edit-form",
+                          "aria-busy": "{{_local.editSaving}}"
+                        },
+                        "children": [
+                          {
+                            "type": "basic",
+                            "name": "Label",
+                            "props": {
+                              "htmlFor": "glitter-comment-edit-content",
+                              "className": "glitter-form-label"
+                            },
+                            "text": "$t:community.fields.comment"
+                          },
+                          {
+                            "type": "basic",
+                            "name": "Textarea",
+                            "props": {
+                              "id": "glitter-comment-edit-content",
+                              "name": "content",
+                              "required": true,
+                              "rows": 4,
+                              "disabled": "{{_local.editSaving}}",
+                              "className": "glitter-form-input glitter-form-textarea"
+                            }
+                          },
+                          {
+                            "type": "basic",
+                            "name": "P",
+                            "if": "{{_local.commentErrors}}",
+                            "props": {
+                              "className": "glitter-form-message glitter-form-message-error",
+                              "role": "alert"
+                            },
+                            "text": "$t:comment_lifecycle.edit_failed"
+                          },
+                          {
+                            "type": "basic",
+                            "name": "Button",
+                            "props": {
+                              "type": "submit",
+                              "disabled": "{{_local.editSaving}}",
+                              "className": "glitter-solid glitter-action-link"
+                            },
+                            "text": "$t:comment_lifecycle.save"
+                          },
+                          {
+                            "type": "basic",
+                            "name": "Button",
+                            "props": {
+                              "type": "button",
+                              "className": "glitter-text-button"
+                            },
+                            "actions": [
+                              {
+                                "type": "click",
+                                "handler": "setState",
+                                "params": {
+                                  "target": "local",
+                                  "editingCommentId": null,
+                                  "commentErrors": null,
+                                  "commentEditForm": {
+                                    "content": "",
+                                    "password": "",
+                                    "verification_token": ""
+                                  }
+                                }
+                              }
+                            ],
+                            "text": "$t:comment_lifecycle.cancel"
+                          }
+                        ],
+                        "actions": [
+                          {
+                            "type": "submit",
+                            "if": "{{!_local.editSaving}}",
+                            "handler": "sequence",
+                            "actions": [
+                              {
+                                "handler": "setState",
+                                "params": {
+                                  "target": "local",
+                                  "editSaving": true,
+                                  "commentErrors": null
+                                }
+                              },
+                              {
+                                "handler": "apiCall",
+                                "auth_mode": "optional",
+                                "target": "/api/modules/sirsoft-board/boards/{{route.slug}}/posts/{{route.id}}/comments/{{comment.id}}",
+                                "params": {
+                                  "method": "PUT",
+                                  "body": "{{_local.commentEditForm}}"
+                                },
+                                "onSuccess": [
+                                  {
+                                    "handler": "setState",
+                                    "params": {
+                                      "target": "local",
+                                      "editSaving": false,
+                                      "editingCommentId": null,
+                                      "commentErrors": null,
+                                      "commentEditForm": {
+                                        "content": "",
+                                        "password": "",
+                                        "verification_token": ""
+                                      },
+                                      "commentVerification": {
+                                        "id": null,
+                                        "token": null
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "handler": "refetchDataSource",
+                                    "params": {
+                                      "dataSourceId": "communityComments"
+                                    }
+                                  },
+                                  {
+                                    "handler": "refetchDataSource",
+                                    "params": {
+                                      "dataSourceId": "communityPost"
+                                    }
+                                  }
+                                ],
+                                "onError": [
+                                  {
+                                    "handler": "setState",
+                                    "params": {
+                                      "target": "local",
+                                      "editSaving": false,
+                                      "commentErrors": "{{error.errors}}",
+                                      "commentEditForm": {
+                                        "content": "{{_local.commentEditForm?.content ?? ''}}",
+                                        "password": "",
+                                        "verification_token": "{{_local.commentEditForm?.verification_token ?? ''}}"
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "basic",
+                        "name": "Div",
+                        "if": "{{_local.editingCommentId !== comment.id && (comment.is_owner || comment.is_guest_comment || comment.abilities?.can_manage)}}",
+                        "props": {
+                          "className": "glitter-comment-actions"
+                        },
+                        "children": [
+                          {
+                            "type": "basic",
+                            "name": "Button",
+                            "if": "{{comment.is_owner || comment.abilities?.can_manage || _local.commentVerification.id === comment.id}}",
+                            "props": {
+                              "type": "button",
+                              "className": "glitter-text-button"
+                            },
+                            "actions": [
+                              {
+                                "type": "click",
+                                "handler": "setState",
+                                "params": {
+                                  "target": "local",
+                                  "editingCommentId": "{{comment.id}}",
+                                  "commentErrors": null,
+                                  "commentSuccess": false,
+                                  "replySuccess": false,
+                                  "commentEditForm": {
+                                    "content": "{{comment.content ?? ''}}",
+                                    "password": "",
+                                    "verification_token": "{{_local.commentVerification.id === comment.id ? _local.commentVerification.token : ''}}"
+                                  }
+                                }
+                              }
+                            ],
+                            "text": "$t:comment_lifecycle.edit"
+                          },
+                          {
+                            "type": "basic",
+                            "name": "Button",
+                            "if": "{{comment.is_owner || comment.abilities?.can_manage || _local.commentVerification.id === comment.id}}",
+                            "props": {
+                              "type": "button",
+                              "className": "glitter-text-button"
+                            },
+                            "actions": [
+                              {
+                                "type": "click",
+                                "handler": "setState",
+                                "params": {
+                                  "target": "local",
+                                  "deletingCommentId": "{{comment.id}}",
+                                  "commentErrors": null
+                                }
+                              }
+                            ],
+                            "text": "$t:comment_lifecycle.delete"
+                          },
+                          {
+                            "type": "basic",
+                            "name": "Button",
+                            "if": "{{comment.is_guest_comment && _local.commentVerification.id !== comment.id}}",
+                            "props": {
+                              "type": "button",
+                              "className": "glitter-text-button"
+                            },
+                            "actions": [
+                              {
+                                "type": "click",
+                                "handler": "setState",
+                                "params": {
+                                  "target": "local",
+                                  "verifyingCommentId": "{{comment.id}}",
+                                  "commentErrors": null,
+                                  "commentVerifyForm": {
+                                    "password": ""
+                                  }
+                                }
+                              }
+                            ],
+                            "text": "$t:comment_lifecycle.verify"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "basic",
+                        "name": "Div",
+                        "if": "{{_local.deletingCommentId === comment.id}}",
+                        "props": {
+                          "className": "glitter-confirm",
+                          "role": "alertdialog"
+                        },
+                        "children": [
+                          {
+                            "type": "basic",
+                            "name": "P",
+                            "text": "$t:comment_lifecycle.delete_confirm"
+                          },
+                          {
+                            "type": "basic",
+                            "name": "Button",
+                            "props": {
+                              "type": "button",
+                              "className": "glitter-solid glitter-action-link",
+                              "disabled": "{{_local.deleteSaving}}"
+                            },
+                            "actions": [
+                              {
+                            "type": "click",
+                            "if": "{{!_local.deleteSaving}}",
+                            "handler": "sequence",
+                                "actions": [
+                                  {
+                                    "handler": "setState",
+                                    "params": {
+                                      "target": "local",
+                                      "deleteSaving": true
+                                    }
+                                  },
+                                  {
+                                    "handler": "apiCall",
+                                    "auth_mode": "optional",
+                                    "target": "/api/modules/sirsoft-board/boards/{{route.slug}}/posts/{{route.id}}/comments/{{comment.id}}",
+                                    "params": {
+                                      "method": "DELETE",
+                                      "body": "{{_local.commentVerification.id === comment.id ? { verification_token: _local.commentVerification.token } : {}}}"
+                                    },
+                                    "onSuccess": [
+                                      {
+                                        "handler": "setState",
+                                        "params": {
+                                          "target": "local",
+                                          "deleteSaving": false
+                                        }
+                                      },
+                                      {
+                                        "handler": "conditions",
+                                        "conditions": [
+                                          {
+                                            "if": "{{_local.editingCommentId === _local.deletingCommentId}}",
+                                            "then": {
+                                              "handler": "setState",
+                                              "params": {
+                                                "target": "local",
+                                                "editingCommentId": null,
+                                                "commentErrors": null,
+                                                "commentEditForm": {
+                                                  "content": "",
+                                                  "password": "",
+                                                  "verification_token": ""
+                                                }
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "handler": "conditions",
+                                        "conditions": [
+                                          {
+                                            "if": "{{_local.replyTargetId === _local.deletingCommentId}}",
+                                            "then": {
+                                              "handler": "setState",
+                                              "params": {
+                                                "target": "local",
+                                                "replyTargetId": null,
+                                                "replyTargetAuthor": "",
+                                                "errors": null,
+                                                "commentSuccess": false,
+                                                "replySuccess": false,
+                                                "commentForm": {
+                                                  "content": "",
+                                                  "author_name": "",
+                                                  "password": "",
+                                                  "parent_id": null
+                                                }
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "handler": "setState",
+                                        "params": {
+                                          "target": "local",
+                                          "deletingCommentId": null,
+                                          "commentErrors": null,
+                                          "commentVerification": {
+                                            "id": null,
+                                            "token": null
+                                          },
+                                          "commentVerifyForm": {
+                                            "password": ""
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "handler": "refetchDataSource",
+                                        "params": {
+                                          "dataSourceId": "communityComments"
+                                        }
+                                      },
+                                      {
+                                        "handler": "refetchDataSource",
+                                        "params": {
+                                          "dataSourceId": "communityPost"
+                                        }
+                                      }
+                                    ],
+                                    "onError": [
+                                      {
+                                        "handler": "setState",
+                                        "params": {
+                                          "target": "local",
+                                          "deleteSaving": false,
+                                          "commentErrors": "{{error.errors}}"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ],
+                            "text": "$t:comment_lifecycle.delete_confirm_action"
+                          },
+                          {
+                            "type": "basic",
+                            "name": "Button",
+                            "props": {
+                              "type": "button",
+                              "className": "glitter-text-button"
+                            },
+                            "actions": [
+                              {
+                                "type": "click",
+                                "handler": "setState",
+                                "params": {
+                                  "target": "local",
+                                  "deletingCommentId": null,
+                                  "commentErrors": null
+                                }
+                              }
+                            ],
+                            "text": "$t:comment_lifecycle.cancel"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "basic",
+                        "name": "P",
+                        "if": "{{_local.commentErrors && _local.editingCommentId !== comment.id}}",
+                        "props": {
+                          "className": "glitter-form-message glitter-form-message-error",
+                          "role": "alert"
+                        },
+                        "text": "$t:comment_lifecycle.action_failed"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "name": "Div",
+                "if": "{{!communityPost?.data?.abilities?.can_write_comments && !_global.currentUser?.uuid}}",
+                "props": {
+                  "className": "glitter-comment-participation"
+                },
+                "children": [
+                  {
+                    "type": "basic",
+                    "name": "P",
+                    "text": "$t:community.comment_guest_unavailable"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "A",
+                    "props": {
+                      "href": "/login",
+                      "className": "glitter-solid glitter-action-link"
+                    },
+                    "text": "$t:nav.login"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "name": "Div",
+                "if": "{{!communityPost?.data?.abilities?.can_write_comments && _global.currentUser?.uuid}}",
+                "props": {
+                  "className": "glitter-comment-participation glitter-state"
+                },
+                "children": [
+                  {
+                    "type": "basic",
+                    "name": "P",
+                    "text": "$t:community.comment_write_unavailable"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "name": "Form",
+                "if": "{{communityPost?.data?.abilities?.can_write_comments}}",
+                "dataKey": "commentForm",
+                  "props": {
+                    "className": "glitter-comment-form",
+                    "aria-busy": "{{_local.commentSaving}}"
+                  },
+                "children": [
+                  {
+                    "type": "basic",
+                    "name": "Div",
+                    "if": "{{_local.replyTargetId}}",
+                    "props": {
+                      "className": "glitter-reply-context",
+                      "role": "status"
+                    },
+                    "children": [
+                      {
+                        "type": "basic",
+                        "name": "P",
+                        "text": "$t:community.replying_to|author={{_local.replyTargetAuthor}}"
+                      },
+                      {
+                        "type": "basic",
+                        "name": "Button",
+                        "props": {
+                          "type": "button",
+                          "className": "glitter-text-button"
+                        },
+                        "actions": [
+                          {
+                            "type": "click",
+                            "handler": "setState",
+                            "params": {
+                              "target": "local",
+                              "replyTargetId": null,
+                              "replyTargetAuthor": "",
+                              "errors": null,
+                              "commentErrors": null,
+                              "commentSuccess": false,
+                              "replySuccess": false,
+                              "commentForm": {
+                                "content": "",
+                                "author_name": "",
+                                "password": "",
+                                "parent_id": null
+                              }
+                            }
+                          }
+                        ],
+                        "text": "$t:community.reply_cancel"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Label",
+                    "props": {
+                      "htmlFor": "glitter-comment-content",
+                      "className": "glitter-form-label"
+                    },
+                    "text": "{{_local.replyTargetId ? '$t:community.reply_content' : '$t:community.fields.comment'}}"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Textarea",
+                    "props": {
+                      "id": "glitter-comment-content",
+                      "name": "content",
+                      "required": true,
+                      "rows": 5,
+                      "disabled": "{{_local.commentSaving}}",
+                      "className": "glitter-form-input glitter-form-textarea"
+                    }
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Div",
+                    "props": {
+                      "className": "glitter-form-grid"
+                    },
+                    "children": [
+                      {
+                        "type": "basic",
+                        "name": "Div",
+                        "if": "{{!_global.currentUser?.uuid}}",
+                        "children": [
+                          {
+                            "type": "basic",
+                            "name": "Label",
+                            "props": {
+                              "htmlFor": "glitter-comment-author",
+                              "className": "glitter-form-label"
+                            },
+                            "text": "$t:community.fields.author_name"
+                          },
+                          {
+                            "type": "basic",
+                            "name": "Input",
+                            "props": {
+                              "id": "glitter-comment-author",
+                              "name": "author_name",
+                              "autoComplete": "name",
+                              "className": "glitter-form-input"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "basic",
+                        "name": "Div",
+                        "if": "{{!_global.currentUser?.uuid}}",
+                        "children": [
+                          {
+                            "type": "basic",
+                            "name": "Label",
+                            "props": {
+                              "htmlFor": "glitter-comment-password",
+                              "className": "glitter-form-label"
+                            },
+                            "text": "$t:community.fields.password"
+                          },
+                          {
+                            "type": "basic",
+                            "name": "Input",
+                            "props": {
+                              "id": "glitter-comment-password",
+                              "name": "password",
+                              "type": "password",
+                              "autoComplete": "current-password",
+                              "className": "glitter-form-input"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "basic",
+                    "name": "P",
+                    "if": "{{_local.errors}}",
+                    "props": {
+                      "className": "glitter-form-message glitter-form-message-error",
+                      "role": "alert"
+                    },
+                    "text": "$t:community.comment_save_failed"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "P",
+                    "if": "{{_local.replySuccess}}",
+                    "props": {
+                      "className": "glitter-form-message",
+                      "role": "status"
+                    },
+                    "text": "$t:community.reply_saved"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "P",
+                    "if": "{{_local.commentSuccess && !_local.replySuccess}}",
+                    "props": {
+                      "className": "glitter-form-message",
+                      "role": "status"
+                    },
+                    "text": "$t:community.comment_saved"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Button",
+                    "if": "{{_local.commentSaving && !_local.replyTargetId}}",
+                    "props": {
+                      "type": "submit",
+                      "disabled": true,
+                      "className": "glitter-solid glitter-action-link"
+                    },
+                    "text": "$t:community.comment_saving"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Button",
+                    "if": "{{_local.commentSaving && _local.replyTargetId}}",
+                    "props": {
+                      "type": "submit",
+                      "disabled": true,
+                      "className": "glitter-solid glitter-action-link"
+                    },
+                    "text": "$t:community.reply_saving"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Button",
+                    "if": "{{!_local.commentSaving && _local.replyTargetId}}",
+                    "props": {
+                      "type": "submit",
+                      "className": "glitter-solid glitter-action-link"
+                    },
+                    "text": "$t:community.reply_submit"
+                  },
+                  {
+                    "type": "basic",
+                    "name": "Button",
+                    "if": "{{!_local.commentSaving && !_local.replyTargetId}}",
+                    "props": {
+                      "type": "submit",
+                      "className": "glitter-solid glitter-action-link"
+                    },
+                    "text": "$t:community.comment_submit"
+                  }
+                ],
+                "actions": [
+                  {
+                    "type": "submit",
+                    "if": "{{!_local.commentSaving}}",
+                    "handler": "sequence",
+                    "actions": [
+                      {
+                        "handler": "setState",
+                        "params": {
+                          "target": "local",
+                          "commentSaving": true,
+                          "errors": null,
+                          "commentErrors": null,
+                          "commentSuccess": false,
+                          "replySuccess": false
+                        }
+                      },
+                      {
+                        "handler": "apiCall",
+                        "auth_mode": "optional",
+                        "target": "/api/modules/sirsoft-board/boards/{{route.slug}}/posts/{{route.id}}/comments",
+                        "params": {
+                          "method": "POST",
+                          "body": "{{_local.commentForm}}"
+                        },
+                        "onSuccess": [
+                          {
+                            "handler": "setState",
+                            "params": {
+                              "target": "local",
+                              "commentSaving": false,
+                              "errors": null,
+                              "commentSuccess": false,
+                              "replySuccess": false,
+                              "replyTargetId": null,
+                              "replyTargetAuthor": "",
+                              "commentForm": {
+                                "content": "",
+                                "author_name": "",
+                                "password": "",
+                                "parent_id": null
+                              }
+                            }
+                          },
+                          {
+                            "handler": "refetchDataSource",
+                            "params": {
+                              "dataSourceId": "communityComments"
+                            }
+                          },
+                          {
+                            "handler": "refetchDataSource",
+                            "params": {
+                              "dataSourceId": "communityPost"
+                            }
+                          }
+                        ],
+                        "onError": [
+                          {
+                            "handler": "setState",
+                            "params": {
+                              "target": "local",
+                              "commentSaving": false,
+                              "errors": "{{error.errors}}",
+                              "commentSuccess": false,
+                              "replySuccess": false,
+                              "commentForm": {
+                                "content": "{{_local.commentForm?.content ?? ''}}",
+                                "author_name": "{{_local.commentForm?.author_name ?? ''}}",
+                                "password": "",
+                                "parent_id": "{{_local.commentForm?.parent_id ?? null}}"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

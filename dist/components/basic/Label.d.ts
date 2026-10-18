@@ -1,0 +1,1 @@
+export declare const Label: import('react').ForwardRefExoticComponent<Omit<import('react').DetailedHTMLProps<import('react').LabelHTMLAttributes<HTMLLabelElement>, HTMLLabelElement>, "ref"> & import('react').RefAttributes<HTMLElement>>;

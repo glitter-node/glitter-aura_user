@@ -1,0 +1,1 @@
+export declare const Li: import('react').ForwardRefExoticComponent<Omit<import('react').DetailedHTMLProps<import('react').LiHTMLAttributes<HTMLLIElement>, HTMLLIElement>, "ref"> & import('react').RefAttributes<HTMLElement>>;

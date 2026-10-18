@@ -1,0 +1,1 @@
+export declare const Span: import('react').ForwardRefExoticComponent<Omit<import('react').DetailedHTMLProps<import('react').HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>, "ref"> & import('react').RefAttributes<HTMLElement>>;
