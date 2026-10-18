@@ -1,0 +1,1 @@
+export declare const Ul: import('react').ForwardRefExoticComponent<Omit<import('react').DetailedHTMLProps<import('react').HTMLAttributes<HTMLUListElement>, HTMLUListElement>, "ref"> & import('react').RefAttributes<HTMLElement>>;

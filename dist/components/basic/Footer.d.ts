@@ -1,0 +1,1 @@
+export declare const Footer: import('react').ForwardRefExoticComponent<Omit<import('react').DetailedHTMLProps<import('react').HTMLAttributes<HTMLElement>, HTMLElement>, "ref"> & import('react').RefAttributes<HTMLElement>>;
